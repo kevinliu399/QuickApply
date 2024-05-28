@@ -9,6 +9,9 @@ module.exports = {
       'main-green': '#67FFA4',
       'main-gray' : '#D9D9D9',
       'main-black': '#141414',
+    },
+    fontFamily: {
+      'rubik': ['Rubik', 'sans-serif'], // Add Rubik font family here
     }
   },
   plugins: [],
