@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, CssBaseline, Drawer, Typography } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
+import LoginButton from '../login-button';
 
 const drawerWidth = 22; 
 
@@ -32,6 +33,10 @@ const LayoutComponent: React.FC = () => {
         component="main"
         sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)` }}
       >
+        <LoginButton 
+          label="Login"
+          onClick={() => console.log('Login')}
+        />
         <Titlebar />
       </Box>
     </Box>

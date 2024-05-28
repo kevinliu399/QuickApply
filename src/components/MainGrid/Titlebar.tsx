@@ -3,7 +3,7 @@ import React from 'react';
 const Titlebar: React.FC = () => {
     return (
         <>
-            Titlebar
+            <h1 className=""> Title </h1>
         </>
     )
 }
