@@ -4,11 +4,7 @@ import LoginButton from '../login-button';
 const Titlebar: React.FC = () => {
     return (
         <>
-            Titlebar
-            <LoginButton 
-                label="Login"
-                onClick={() => console.log('login')}
-            />
+            <h1> Title </h1>
         </>
     )
 }

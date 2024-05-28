@@ -7,9 +7,8 @@ type LoginButtonProps = {
 
 const LoginButton: React.FC<LoginButtonProps> = ( {label, onClick} ) => {
     return (
-        <button className="">
-            {label}
-
+        <button className="bg-main-green px-14 py-2 rounded-3xl shadow-md hover:shadow-2xl">
+            <span className="font-bold text-main-black"> {label} </span>
         </button>
     )
 };
