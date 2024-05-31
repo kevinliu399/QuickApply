@@ -11,7 +11,7 @@ module.exports = {
       'main-black': '#141414',
     },
     fontFamily: {
-      'rubik': ['Rubik', 'sans-serif'], // Add Rubik font family here
+      'rubik': ['Rubik', 'sans-serif'],
     }
   },
   plugins: [],
