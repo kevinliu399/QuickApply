@@ -1,4 +1,5 @@
 import React from 'react';
+import { CircleX } from 'lucide-react' 
 
 type LoginModalProps = {
     onClick?: () => void;
@@ -9,7 +10,7 @@ type LoginModalProps = {
     isOpen?: boolean;
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ onClick, password, username, email, isOpen }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ onClick, password, username, email, isOpen, onSignInClick }) => {
     if (!isOpen) return null;
 
     return (
@@ -20,7 +21,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, password, username, em
                 <input type="password" placeholder="Password" value={password} onChange={(e) => {}} className="mb-2 p-2 border rounded" />
                 <input type="email" placeholder="Email" value={email} onChange={(e) => {}} className="mb-4 p-2 border rounded" />
                 <button onClick={onClick} className="bg-blue-500 text-white p-2 rounded">Register</button>
-                <p className="mt-4">Already have an account? <a href="#" className="text-blue-500">Sign In</a></p>
+                <p className="mt-4">Already have an account? <a className="text-blue-800" onClick={onSignInClick}>Sign In</a></p>
             </div>
         </div>
     );
