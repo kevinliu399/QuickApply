@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, CssBaseline, Drawer, Typography } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
+import LoginModal from '../../modals/login';
+import RegisterModal from '../../modals/register';
 
 const drawerWidth = 22; 
 
 const LayoutComponent: React.FC = () => {
+  const [isloginModalOpen, setLoginModalOpen] = useState(false);
+  const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+
+  const handleLoginOpen = () => {
+    setLoginModalOpen(true);
+    setRegisterModalOpen(false);
+  }
+  const handleLoginClose = () => {
+    setLoginModalOpen(false);
+  }
+
+  const handleRegisterOpen = () => {
+    setLoginModalOpen(false);
+    setRegisterModalOpen(true);
+};
+
+const handleRegisterClose = () => {
+    setRegisterModalOpen(false);
+};
+
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       
@@ -35,10 +57,27 @@ const LayoutComponent: React.FC = () => {
       >
         <LoginButton 
           label="Login"
-          onClick={() => console.log('Login')}
+          onClick={handleLoginOpen}
         />
         <Titlebar />
       </Box>
+      <LoginModal
+            isOpen={isloginModalOpen}
+            onClick={handleLoginClose}
+            onSignUpClick={handleRegisterOpen}
+            username=""
+            password=""
+            email=""
+        />
+      <RegisterModal
+          isOpen={isRegisterModalOpen}
+          onClick={handleRegisterClose}
+          onSignInClick={handleLoginOpen}
+          username=""
+          password=""
+          email=""
+      />
+    
     </Box>
   );
 };
