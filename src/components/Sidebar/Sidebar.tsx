@@ -1,7 +1,6 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; // Import icons from Lucide
 import './Sidebar.css';
-
 
 // TextWithCopyIcon component
 const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, isEditing, onChange, onCopy, onClear }) => (
@@ -21,12 +20,14 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onClear} 
+        style={{ maxWidth: "20px" }}
       />
     ) : (
       <Copy 
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onCopy} 
+        style={{ maxWidth: "20px" }}
       />
     )}
   </div>
@@ -63,6 +64,7 @@ const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[
 // Sidebar component
 const Sidebar: React.FC = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(true);
   const [texts, setTexts] = useState<{ text: string, icon: React.ReactNode }[]>([
     { text: 'Text 1', icon: <Mail className="text-[#67ffa4]" /> },
     { text: 'Text 2', icon: <Linkedin className="text-[#67ffa4]" /> },
@@ -95,19 +97,43 @@ const Sidebar: React.FC = () => {
     setTexts(newTexts);
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSidebarVisible(window.innerWidth >= 1300);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
-    <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
-      <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
-        QuickApply
-      </h1>
-      <SidebarContent 
-        texts={texts} 
-        isEditing={isEditing} 
-        handleTextChange={handleTextChange} 
-        handleCopyClick={handleCopyClick} 
-        handleEditClick={handleEditClick} 
-        handleClearClick={handleClearClick} 
-      />
+    <div>
+      {isSidebarVisible && (
+        <div className="sidebar bg-[#201c1c] flex flex-col items-center p-4 h-screen">
+          <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
+            QuickApply
+          </h1>
+          <SidebarContent 
+            texts={texts} 
+            isEditing={isEditing} 
+            handleTextChange={handleTextChange} 
+            handleCopyClick={handleCopyClick} 
+            handleEditClick={handleEditClick} 
+            handleClearClick={handleClearClick} 
+          />
+        </div>
+      )}
+      {!isSidebarVisible && (
+        <button onClick={() => setIsSidebarVisible(true)} className="toggleButton fixed top-4 right-4 bg-[#67FFA4] text-black px-4 py-2 rounded-full shadow-lg hover:bg-[#57e293]">
+          Links
+        </button>
+      )}
     </div>
   );
 };
