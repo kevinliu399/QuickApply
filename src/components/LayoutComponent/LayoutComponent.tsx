@@ -65,17 +65,11 @@ const handleRegisterClose = () => {
             isOpen={isloginModalOpen}
             onClick={handleLoginClose}
             onSignUpClick={handleRegisterOpen}
-            username=""
-            password=""
-            email=""
         />
       <RegisterModal
           isOpen={isRegisterModalOpen}
           onClick={handleRegisterClose}
           onSignInClick={handleLoginOpen}
-          username=""
-          password=""
-          email=""
       />
     
     </Box>
