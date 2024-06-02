@@ -1,7 +1,5 @@
-.gradient-background {
-    background: rgb(106,137,106);
-    background: -moz-linear-gradient(35deg, rgba(106,137,106,1) 14%, rgba(120,207,155,1) 37%, rgba(225,255,237,1) 68%);
-    background: -webkit-linear-gradient(35deg, rgba(106,137,106,1) 14%, rgba(120,207,155,1) 37%, rgba(225,255,237,1) 68%);
-    background: linear-gradient(35deg, rgba(106,137,106,1) 14%, rgba(120,207,155,1) 37%, rgba(225,255,237,1) 68%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#6a896a",endColorstr="#e1ffed",GradientType=1);
+.gradient-border {
+    border-width: 8px;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(35deg, rgba(106,137,106,1) 14%, rgba(120,207,155,1) 37%, rgba(225,255,237,1) 68%);
 }

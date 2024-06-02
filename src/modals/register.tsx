@@ -53,7 +53,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
     return (
         <div className="fixed inset-0 flex bg-black bg-opacity-50">
             <div className="absolute top-0 bottom-0 left-64 right-0 flex items-center justify-center">
-                <div className="bg-white p-4 rounded-lg shadow-lg w-1/2 items-center justify-center space-y-4">
+                <div className="bg-white p-4 rounded-xl shadow-2xl w-1/2 items-center justify-center space-y-4 gradient-border">
                     <div className="flex justify-between items-center py-6">
                         <h1 className="text-2xl font-bold">Register</h1>
                         <CircleX size={20} onClick={onClick} className="cursor-pointer hover:text-main-green hover:duration-200" />
@@ -64,7 +64,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                             label="Email"
                             variant="outlined"
                             className="mb-2 p-2 border rounded"
-                            borderColor="gray"
+                            borderColor="black"
                         />
 
                         <CustomTextField  
@@ -72,18 +72,18 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                             label="Username"
                             variant="outlined"
                             className="mb-2 p-2 border rounded"
-                            borderColor="gray"
+                            borderColor="black"
                         />
                         <CustomTextField 
                             onChange={(e) => {}} 
                             label="Password"
                             variant="outlined"
                             className="mb-2 p-2 border rounded" 
-                            borderColor="gray"
+                            borderColor="black"
                         />
                     </div>
                     <div className="flex justify-center py-2 items-center w-full">
-                        <button onClick={onClick} className=" text-gray-800 font-semibold p-2 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign Up</button>
+                        <button onClick={onClick} className=" text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign Up</button>
                     </div>
                     <p className="mt-4">Already have an account? <a className="text-gray-400 hover:text-main-green hover:duration-200 hover:underline cursor-pointer" onClick={onSignInClick}>Sign In</a></p>    
                 </div>
