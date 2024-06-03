@@ -18,12 +18,6 @@ const options = {
   shouldForwardProp: (prop: string) => prop !== 'borderColor',
 };
 
-const outlinedSelectors = [
-  '& .MuiOutlinedInput-notchedOutline',
-  '&:hover .MuiOutlinedInput-notchedOutline',
-  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline',
-];
-
 const CustomTextField = styled(
   MuiTextField,
   options,
@@ -36,6 +30,8 @@ const CustomTextField = styled(
   },
   '& .MuiInput-underline:before': {
     borderBottomColor: borderColor,
+    borderBottomWidth: 2,
+    borderBottomStyle: 'solid',
   },
   '& .MuiInput-underline:hover:before': {
     borderBottomColor: borderColor,
@@ -43,8 +39,23 @@ const CustomTextField = styled(
   '& .MuiInput-underline:after': {
     borderBottomColor: borderColor,
   },
-  [outlinedSelectors.join(',')]: {
-    borderColor,
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
+      borderBottomWidth: 2,
+      borderBottomStyle: 'solid',
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+    },
+    '&:hover fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
+    },
   },
 }));
 
@@ -64,19 +75,19 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick 
                             onChange={(e) => {}} 
                             label="Username"
                             variant="outlined"
-                            className="mb-2 p-2 border rounded"
+                            className="mb-2 p-2"
                             borderColor="black"
                         />
                         <CustomTextField 
                             onChange={(e) => {}} 
                             label="Password"
                             variant="outlined"
-                            className="mb-2 p-2 border rounded" 
+                            className="mb-2 p-2" 
                             borderColor="black"
                         />
                     </div>
                     <div className="flex justify-center py-2 items-center w-full">
-                        <button onClick={onClick} className=" text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign In</button>
+                        <button onClick={onClick} className="text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign In</button>
                     </div>
                     <p className="mt-4">Don't have an account? <a className="text-gray-800 hover:text-main-green hover:duration-200 hover:underline cursor-pointer" onClick={onSignUpClick}>Register</a></p>    
                 </div>
