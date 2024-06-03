@@ -4,6 +4,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import ListingCard from '../MainGrid/ListingCard';
+import HeaderTable from '../MainGrid/HeaderTable';
 
 const drawerWidth = 22; 
 
@@ -40,7 +41,9 @@ const LayoutComponent: React.FC = () => {
           onClick={() => console.log('Login')}
         />
         <Titlebar />
+        <HeaderTable />
         <ListingCard />
+        
       </Box>
     </Box>
   );
