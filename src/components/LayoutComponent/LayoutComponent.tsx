@@ -5,6 +5,7 @@ import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
+import ListingCard from '../MainGrid/ListingCard';
 
 const drawerWidth = 22; 
 
@@ -53,13 +54,15 @@ const handleRegisterClose = () => {
     {/* Main part of the project */}
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)` }}
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
+        
       >
         <LoginButton 
           label="Login"
           onClick={handleLoginOpen}
         />
         <Titlebar />
+        <ListingCard />
       </Box>
       <LoginModal
             isOpen={isloginModalOpen}
