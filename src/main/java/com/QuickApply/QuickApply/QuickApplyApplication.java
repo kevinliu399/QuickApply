@@ -11,3 +11,6 @@ public class QuickApplyApplication {
 	}
 
 }
+
+// Data for the jobs
+// Data for the users
