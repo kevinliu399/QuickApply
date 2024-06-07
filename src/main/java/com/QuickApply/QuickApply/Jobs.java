@@ -9,8 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "jobs")
-@Data
+@Document(collection = "jobs") // specified on MongoDB
+@Data // Specifies this is data
 @AllArgsConstructor // Create a constructor with all the args
 @NoArgsConstructor  // Create an empty constructor
 public class Jobs {

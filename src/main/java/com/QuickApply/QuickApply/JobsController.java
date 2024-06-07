@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+// Repository is for the HTTP Requests
 @RestController
 @RequestMapping("/api/v1/jobs")
 public class JobsController {

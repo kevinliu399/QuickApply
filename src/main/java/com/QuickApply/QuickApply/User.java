@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.util.List;
 
+// Refer to Jobs for documentation
 @Document(collection = "users")
 @Data
 @AllArgsConstructor
@@ -20,6 +21,7 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private List<String> commonLinks;
 
     @DocumentReference
     private List<Jobs> jobIds;
