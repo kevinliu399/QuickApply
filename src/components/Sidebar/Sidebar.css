@@ -1,55 +1,96 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
+/* Sidebar.css */
+.icon-container {
+  flex: 0 0 20%; /* Icon takes up 20% of the width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.textbox-container {
+  flex: 1; /* Textbox takes up the remaining 80% of the width */
+  display: flex;
+  align-items: center;
+}
 
 
-.toggleButton {
-    width: 100%;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  
-  .toggleButton svg {
-    font-size: 50px;
-  }
-  .toggleButton button {
-    margin-right: 20px;
-    background-color: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
+/* HAMBURGER MENU * */
+:root {
+  --bar-width: 60px;
+  --bar-height: 8px;
+  --hamburger-gap: 6px;
+  --foreground: white;
+  --background: white;
+  --hamburger-margin: 8px;
+  --animation-timing: 200ms ease-in-out;
+  --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
+}
 
-  @media only screen and (max-width: 900px) {
-    .navbar a {
-      width: 70px;
-    }
-  }
+.hamburger-menu {
+  --x-width: calc(var(--hamburger-height) * 1.41421356237);
 
-  @media only screen and (max-width: 600px) {
-    .toggleButton {
-      display: flex;
-    }
-    #close sidebar {
-      display: none;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: var(--hamburger-gap);
+  width: max-content;
+  position: absolute;
+  top: var(--hamburger-margin);
+  left: var(--hamburger-margin);
+  z-index: 2;
+  cursor: pointer;
+}
 
-  @media only screen and (min-width: 600px) {   
-    .toggleButton {
-      display: none;
-    }
-  
-    .hiddenLinks {
-      display: none;
-    }
-  
-    #open {
-      height: 100px;
-    }
-  
-    #open .sidebar-content {
-      flex-direction: row;
-    }
-  }
+.hamburger-menu:has(input:focus-visible)::before,
+.hamburger-menu:has(input:focus-visible)::after,
+.hamburger-menu input:focus-visible {
+  box-shadow: 0 0 0 1px var(--foreground);
+}
+
+.hamburger-menu::before,
+.hamburger-menu::after,
+.hamburger-menu input {
+  content: "";
+  width: var(--bar-width);
+  height: var(--bar-height);
+  background-color: var(--foreground);
+  border-radius: 9999px;
+  transform-origin: left center;
+  transition: opacity var(--animation-timing), width var(--animation-timing),
+    rotate var(--animation-timing), translate var(--animation-timing),
+    background-color var(--animation-timing);
+}
+
+.hamburger-menu input {
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  pointer-events: none;
+}
+
+.hamburger-menu:has(input:checked)::before {
+  rotate: 45deg;
+  width: var(--x-width);
+  translate: 0 calc(var(--bar-height) / -2);
+}
+
+.hamburger-menu:has(input:checked)::after {
+  rotate: -45deg;
+  width: var(--x-width);
+  translate: 0 calc(var(--bar-height) / 2);
+}
+
+.hamburger-menu input:checked {
+  opacity: 0;
+  width: 0;
+}
+
+.sidebar {
+  transition: translate var(--animation-timing);
+  translate: -150%;
+}
+
+.hamburger-menu:has(input:checked) + .sidebar {
+  translate: 0;
+}
