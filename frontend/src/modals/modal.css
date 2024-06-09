@@ -1,0 +1,5 @@
+.gradient-border {
+    border-width: 8px;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(35deg, rgba(106,137,106,1) 14%, rgba(120,207,155,1) 37%, rgba(225,255,237,1) 68%);
+}
