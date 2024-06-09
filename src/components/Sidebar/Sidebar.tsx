@@ -97,6 +97,7 @@ const Sidebar: React.FC = () => {
     setTexts(newTexts);
   };
 
+  /*
   return (
     <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
       <label className="hamburger-menu">
@@ -117,6 +118,24 @@ const Sidebar: React.FC = () => {
       </div>
     </div>
   );
+};
+*/
+
+return (
+  <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
+    <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
+      QuickApply
+    </h1>
+    <SidebarContent
+      texts={texts} 
+      isEditing={isEditing} 
+      handleTextChange={handleTextChange} 
+      handleCopyClick={handleCopyClick} 
+      handleEditClick={handleEditClick} 
+      handleClearClick={handleClearClick} 
+    />
+  </div>
+);
 };
 
 export default Sidebar;
