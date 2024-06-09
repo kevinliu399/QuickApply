@@ -1,24 +1,31 @@
 package com.QuickApply.QuickApply;
 
-
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-// Repository is for the HTTP Requests
 @RestController
-@RequestMapping("/api/v1/jobs")
+@RequestMapping("/jobs")
 public class JobsController {
+
     @Autowired
     private JobsService jobsService;
-    @GetMapping
-    public ResponseEntity<List<Jobs>> getAllJobs() {
-        return new ResponseEntity<List<Jobs>>(jobsService.allJobs(), HttpStatus.OK);
+
+    @PostMapping
+    public Jobs createJob(@RequestBody Jobs job) {
+        return jobsService.createJob(job);
     }
 
+    @GetMapping
+    public List<Jobs> getAllJobs() {
+        return jobsService.getAllJobs();
+    }
+
+    @GetMapping("/{id}")
+    public Optional<Jobs> getJobById(@PathVariable ObjectId id) {
+        return jobsService.getJobById(id);
+    }
 }

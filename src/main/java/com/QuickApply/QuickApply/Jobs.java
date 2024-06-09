@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Document(collection = "jobs") // specified on MongoDB
@@ -19,10 +20,11 @@ public class Jobs {
     private String title;
     private String company;
     private String status;
+    private String link;
     private Boolean applied;
     private String Description;
-    private String applicationDate;
-    private String interviewDate;
-    private String offerDate;
+    private LocalDate applicationDate;
+    private LocalDate interviewDate;
+    private LocalDate offerDate;
     private List<String> tags;
 }

@@ -1,17 +1,31 @@
 package com.QuickApply.QuickApply;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
-
-// Service is used as a middleman for the business logic
 @Service
 public class JobsService {
-    @Autowired // We use it for dependency injection -> inject a dependency into a class without the need to configure it
+
+    @Autowired
     private JobsRepository jobsRepository;
-    public List<Jobs> allJobs() {
+
+    public Jobs createJob(Jobs job) {
+        return jobsRepository.save(job);
+    }
+
+    public List<Jobs> getAllJobs() {
         return jobsRepository.findAll();
+    }
+
+    public Optional<Jobs> getJobById(ObjectId id) {
+        return jobsRepository.findById(id);
+    }
+
+    public List<Jobs> allJobs() {
+        return null;
     }
 }

@@ -23,6 +23,5 @@ public class User {
     private String email;
     private List<String> commonLinks;
 
-    @DocumentReference
     private List<Jobs> jobIds;
 }

@@ -9,5 +9,4 @@ public class QuickApplyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(QuickApplyApplication.class, args);
 	}
-
 }
