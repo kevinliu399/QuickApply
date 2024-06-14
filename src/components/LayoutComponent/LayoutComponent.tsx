@@ -4,7 +4,9 @@ import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import ListingCard from '../MainGrid/ListingCard';
+import ListingCardGrid from '../MainGrid/ListingCardGrid';
 import HeaderTable from '../MainGrid/HeaderTable';
+import NewListingForm from '../MainGrid/NewListingForm';
 
 const drawerWidth = 22; 
 
@@ -42,7 +44,7 @@ const LayoutComponent: React.FC = () => {
         />
         <Titlebar />
         <HeaderTable />
-        <ListingCard />
+        <NewListingForm />
         
       </Box>
     </Box>
