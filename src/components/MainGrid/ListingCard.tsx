@@ -99,7 +99,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, isChecked: in
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 sx={{ flex: 1 }}
-                inputProps={{ sx: { textAlign: 'center' } }}
+                inputProps={{ sx: { textAlign: 'center' }, maxLength: 28 }}
               />
             </Box>
             <Box
@@ -139,7 +139,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, isChecked: in
                 value={editedCompany}
                 onChange={(e) => setEditedCompany(e.target.value)}
                 sx={{ flex: 1, zIndex: 0 }}
-                inputProps={{ sx: { textAlign: 'center' } }}
+                inputProps={{ sx: { textAlign: 'center' }, maxLength: 20 }}
               />
             </Box>
             <Box
@@ -190,8 +190,37 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, isChecked: in
           </>
         ) : (
           <>
-            <Typography className="rubik" variant="body1" sx={{ flex: 1, textAlign: 'center', fontWeight: 600, color: '#3D3D3D' }}>{editedTitle}</Typography>
-            <Typography className="rubik" variant="body1" sx={{ flex: 1, textAlign: 'center', fontWeight: 600, color: '#3D3D3D'  }}>{editedCompany}</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+              }}
+            >
+              <Typography className="rubik" variant="body1" sx={{  textAlign: 'center', fontWeight: 600, color: '#3D3D3D', fontSize: 15, maxWidth: 190, textOverflow: 'ellipsis',whiteSpace: 'nowrap',
+                overflow: 'hidden',}}>{editedTitle}</Typography>
+
+            </Box>
+            
+            <Typography 
+              className="rubik" 
+              variant="body1" 
+              sx={{ 
+                flex: 1, 
+                textAlign: 'center', 
+                fontWeight: 600, 
+                color: '#3D3D3D', 
+                fontSize: 15,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%' 
+              }}
+            >
+              {editedCompany}
+            </Typography>
+
             <Box
               sx={{
                 display: 'flex',
@@ -232,6 +261,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, isChecked: in
                   '& .MuiSvgIcon-root': {
                     fontSize: 24,
                   },
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                  },
+                  '& .MuiTouchRipple-root': {
+                    display: 'none',
+                  },
+                  cursor: 'default',
+                  transition: 'none'
                 }}
                 checked={isChecked}
                 readOnly
