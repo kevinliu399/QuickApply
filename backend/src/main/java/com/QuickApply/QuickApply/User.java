@@ -21,6 +21,9 @@ public class User {
     private String password;
     private String email;
     private List<String> commonLinks;
-
     private List<Jobs> jobIds;
+
+    public String getId() {
+        return id != null ? id.toHexString() : null;
+    }
 }
