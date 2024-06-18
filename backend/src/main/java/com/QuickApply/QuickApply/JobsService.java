@@ -25,7 +25,27 @@ public class JobsService {
         return jobsRepository.findById(id);
     }
 
-    public List<Jobs> allJobs() {
-        return null;
+    public Jobs updateJob(ObjectId id, Jobs updatedJob) {
+        Optional<Jobs> optionalJob = jobsRepository.findById(id);
+        if (optionalJob.isPresent()) {
+            Jobs job = optionalJob.get();
+            job.setTitle(updatedJob.getTitle());
+            job.setCompany(updatedJob.getCompany());
+            job.setStatus(updatedJob.getStatus());
+            job.setLink(updatedJob.getLink());
+            job.setApplied(updatedJob.getApplied());
+            job.setDescription(updatedJob.getDescription());
+            job.setApplicationDate(updatedJob.getApplicationDate());
+            job.setInterviewDate(updatedJob.getInterviewDate());
+            job.setOfferDate(updatedJob.getOfferDate());
+            job.setTags(updatedJob.getTags());
+            return jobsRepository.save(job);
+        } else {
+            throw new RuntimeException("Job not found with id " + id);
+        }
+    }
+
+    public void deleteJob(ObjectId id) {
+        jobsRepository.deleteById(id);
     }
 }

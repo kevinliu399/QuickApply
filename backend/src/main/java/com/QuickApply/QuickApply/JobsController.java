@@ -28,4 +28,14 @@ public class JobsController {
     public Optional<Jobs> getJobById(@PathVariable ObjectId id) {
         return jobsService.getJobById(id);
     }
+
+    @PatchMapping("/{id}")
+    public Jobs updateJob(@PathVariable ObjectId id, @RequestBody Jobs job) {
+        return jobsService.updateJob(id, job);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteJob(@PathVariable ObjectId id) {
+        jobsService.deleteJob(id);
+    }
 }
