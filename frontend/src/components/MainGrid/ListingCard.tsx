@@ -11,7 +11,7 @@ interface ListingCardProps {
   company: string;
   isChecked: boolean;
   isEditing: boolean;
-  color: 'red' | 'green' | 'yellow'; // New prop for color
+  color: 'red' | 'green' | 'yellow';
 }
 
 const StyledTextField = styled(TextField)(({ theme }) => ({

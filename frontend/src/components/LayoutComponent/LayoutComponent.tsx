@@ -8,7 +8,6 @@ import RegisterModal from '../../modals/register';
 import ListingCard from '../MainGrid/ListingCard';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
 import HeaderTable from '../MainGrid/HeaderTable';
-import NewListingForm from '../MainGrid/NewListingForm';
 
 const drawerWidth = 22; 
 
@@ -66,8 +65,7 @@ const handleRegisterClose = () => {
         />
         <Titlebar />
         <HeaderTable />
-        <NewListingForm />
-        
+        <ListingCardGrid />
       </Box>
       <LoginModal
             isOpen={isloginModalOpen}
