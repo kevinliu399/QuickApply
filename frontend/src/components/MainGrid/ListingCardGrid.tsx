@@ -82,25 +82,6 @@ const ListingCardGrid: React.FC = () => {
     setNewListing({ ...newListing, status: nextStatus });
   };
 
-  // Temporary remove click outside logic
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (formRef.current && !formRef.current.contains(event.target as Node)) {
-  //       handleCancel();
-  //     }
-  //   };
-
-  //   if (isAdding) {
-  //     document.addEventListener('mousedown', handleClickOutside);
-  //   } else {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [isAdding]);
-
   useEffect(() => {
     console.log('isAdding changed:', isAdding); // Debugging step
   }, [isAdding]);
