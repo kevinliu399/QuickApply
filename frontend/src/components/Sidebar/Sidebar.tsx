@@ -3,30 +3,32 @@ import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; // Import
 import './Sidebar.css';
 
 
-// TextWithCopyIcon component
 const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, isEditing, onChange, onCopy, onClear }) => (
-  <div className="bg-[#232323] rounded-md p-2 flex items-center flex-1 ml-2 border-2 border-[rgba(169,169,169,0.6)]" style={{ boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06)' }}>
+  <div className="bg-[#232323] overflow-hidden rounded-md p-2 flex items-center ml-2 border-2 border-[rgba(169,169,169,0.6)] " style={{ width: '100%', boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06)' }}>
     {isEditing ? (
       <input 
         type="text" 
         value={text} 
         onChange={onChange} 
-        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm"
+        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm "
+        style={{ width: '100%' }}
       />
     ) : (
-      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">{text}</span>
+      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{text}</span>
     )}
     {isEditing ? (
       <X 
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onClear} 
+        style={{ maxWidth: "20px" }}
       />
     ) : (
       <Copy 
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onCopy} 
+        style={{ maxWidth: "20px" }}
       />
     )}
   </div>
@@ -95,21 +97,45 @@ const Sidebar: React.FC = () => {
     setTexts(newTexts);
   };
 
+  /*
   return (
     <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
-      <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
-        QuickApply
-      </h1>
-      <SidebarContent 
-        texts={texts} 
-        isEditing={isEditing} 
-        handleTextChange={handleTextChange} 
-        handleCopyClick={handleCopyClick} 
-        handleEditClick={handleEditClick} 
-        handleClearClick={handleClearClick} 
-      />
+      <label className="hamburger-menu">
+        <input type="checkbox"/>
+      </label>
+      <div className="sidebar w-full">
+        <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
+          QuickApply
+        </h1>
+        <SidebarContent
+          texts={texts} 
+          isEditing={isEditing} 
+          handleTextChange={handleTextChange} 
+          handleCopyClick={handleCopyClick} 
+          handleEditClick={handleEditClick} 
+          handleClearClick={handleClearClick} 
+        />
+      </div>
     </div>
   );
+};
+*/
+
+return (
+  <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
+    <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
+      QuickApply
+    </h1>
+    <SidebarContent
+      texts={texts} 
+      isEditing={isEditing} 
+      handleTextChange={handleTextChange} 
+      handleCopyClick={handleCopyClick} 
+      handleEditClick={handleEditClick} 
+      handleClearClick={handleClearClick} 
+    />
+  </div>
+);
 };
 
 export default Sidebar;
