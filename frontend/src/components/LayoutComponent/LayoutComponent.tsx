@@ -6,7 +6,6 @@ import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
 import ListingCard from '../MainGrid/ListingCard';
-import ListingCardGrid from '../MainGrid/ListingCardGrid';
 import HeaderTable from '../MainGrid/HeaderTable';
 import NewListingForm from '../MainGrid/NewListingForm';
 
@@ -51,14 +50,12 @@ const handleRegisterClose = () => {
         anchor="left"
       >
         <Sidebar />
-
       </Drawer>
 
     {/* Main part of the project */}
       <Box
         component="main"
         sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
-        
       >
         <LoginButton 
           label="Login"
@@ -67,7 +64,7 @@ const handleRegisterClose = () => {
         <Titlebar />
         <HeaderTable />
         <NewListingForm />
-        
+        <ListingCard title="Test Title" companyName="Test Company" description="Test Description" status="Applied" isApplied={true} />
       </Box>
       <LoginModal
             isOpen={isloginModalOpen}
