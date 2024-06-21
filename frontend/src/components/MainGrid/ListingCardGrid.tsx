@@ -5,11 +5,23 @@ import ListingCard from './ListingCard';
 const API_URL = 'http://localhost:8080/jobs'; // Change at production
 
 interface Listing {
-  title: string;
-  company: string;
-  isChecked: boolean;
-  isEditing: boolean;
-  status: 'red' | 'green' | 'yellow';
+  title?: string;
+  company?: string;
+  description?: string;
+  status?: string;
+  // POSSIBILITIES FOR STATUS LEGEND
+  // WATCHING => GRAY
+  // APPLIED => GREEN
+  // INTERVIEWING => YELLOW
+  // REJECTED => RED
+
+  applied?: boolean;
+
+  // double check for type
+  applicationDate?: string;
+  interviewDate?: string;
+  offerDate?: string;
+  tags?: string[];
 }
 
 const ListingCardGrid: React.FC = () => {
@@ -32,24 +44,23 @@ const ListingCardGrid: React.FC = () => {
     fetchListings();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <Box>
-      {listings.map((listing, index) => (
-        <ListingCard
-          key={index}
-          title={listing.title}
-          company={listing.company}
-          isChecked={listing.isChecked}
-          isEditing={listing.isEditing}
-          color={listing.status}
-        />
-      ))}
-    </Box>
-  );
-};
+      <Box>
+        {listings.map((listing) => (
+          <ListingCard
+            title={listing.title}
+            company={listing.company}
+            description={listing.description}
+            status={listing.status}
+            applied={listing.applied}
+            applicationDate={listing.applicationDate}
+            interviewDate={listing.interviewDate}
+            offerDate={listing.offerDate}
+            tags={listing.tags}
+          />
+        ))}
+      </Box>
+    );
+  };
 
 export default ListingCardGrid;

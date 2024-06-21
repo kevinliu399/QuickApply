@@ -64,18 +64,20 @@ const handleRegisterClose = () => {
         <Titlebar />
         <HeaderTable />
         <NewListingForm />
-        <ListingCard title="Test Title" companyName="Test Company" description="Test Description" status="Applied" isApplied={true} />
       </Box>
-      <LoginModal
-            isOpen={isloginModalOpen}
-            onClick={handleLoginClose}
-            onSignUpClick={handleRegisterOpen}
+
+
+        <LoginModal
+              isOpen={isloginModalOpen}
+              onClick={handleLoginClose}
+              onSignUpClick={handleRegisterOpen}
+          />
+        <RegisterModal
+            isOpen={isRegisterModalOpen}
+            onClick={handleRegisterClose}
+            onSignInClick={handleLoginOpen}
         />
-      <RegisterModal
-          isOpen={isRegisterModalOpen}
-          onClick={handleRegisterClose}
-          onSignInClick={handleLoginOpen}
-      />
+
     
     </Box>
   );
