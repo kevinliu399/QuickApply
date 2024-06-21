@@ -3,6 +3,7 @@ import { Checkbox } from '@mui/material';
 import { Check, Trash2, Pen } from 'lucide-react';
 import { styled } from '@mui/system';
 import { ArrowDownNarrowWide } from 'lucide-react';
+import './maingrid.css';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -83,7 +84,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, description, 
           </button>
         </div>
       </div>
-      {showDetailCard && (
+      <div className={`detail-card ${showDetailCard ? 'show' : ''}`}>
         <div className="flex justify-center w-full">
           <div className="bg-main-gray bg-opacity-95 rounded-b-2xl shadow-2xl w-[98%] h-[200px] p-4">
             <div className="grid grid-cols-3 h-full">
@@ -133,7 +134,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, description, 
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
