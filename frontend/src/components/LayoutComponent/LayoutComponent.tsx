@@ -11,9 +11,12 @@ import NewListingForm from '../MainGrid/NewListingForm';
 
 const drawerWidth = 22; 
 
+
 const LayoutComponent: React.FC = () => {
   const [isloginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+
+  const currentWidth = `calc(100% - ${drawerWidth}%)`;
 
   const handleLoginOpen = () => {
     setLoginModalOpen(true);
@@ -33,7 +36,7 @@ const handleRegisterClose = () => {
 };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       
     {/* side bar */}
       <Drawer

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Pagination } from '@mui/material';
+import { Pagination } from '@mui/material';
 import ListingCard from './ListingCard';
 
 const API_URL = 'http://localhost:8080/jobs'; // Change at production
@@ -20,7 +20,7 @@ const ListingCardGrid: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const listingsPerPage = 10;
+  const [listingsPerPage, setListingsPerPage] = useState(10); // Default value
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -36,6 +36,19 @@ const ListingCardGrid: React.FC = () => {
     };
 
     fetchListings();
+
+    // Calculate number of listings per page based on viewport height
+    const updateListingsPerPage = () => {
+      const viewportHeight = window.innerHeight;
+      const cardHeight = 150;
+      const newPerPage = Math.floor((viewportHeight - 200) / cardHeight); 
+      setListingsPerPage(newPerPage > 0 ? newPerPage : 1);
+    };
+
+    updateListingsPerPage();
+    window.addEventListener('resize', updateListingsPerPage);
+
+    return () => window.removeEventListener('resize', updateListingsPerPage);
   }, []);
 
   // Get current listings for the page
@@ -49,11 +62,11 @@ const ListingCardGrid: React.FC = () => {
   };
 
   return (
-    <Box>
+    <div className="flex flex-col h-full overflow-y-hidden">
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
+        <div className="flex-grow overflow-y-hidden">
           {currentListings.map((listing, index) => (
             <ListingCard
               key={index}
@@ -68,17 +81,17 @@ const ListingCardGrid: React.FC = () => {
               tags={listing.tags}
             />
           ))}
-          <Box display="flex" justifyContent="center" mt={2}>
-            <Pagination
-              count={Math.ceil(listings.length / listingsPerPage)}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-            />
-          </Box>
-        </>
+        </div>
       )}
-    </Box>
+      <div className="absolute justify-start mb-10 ml-10 bottom-0">
+        <Pagination
+          count={Math.ceil(listings.length / listingsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </div>
+    </div>
   );
 };
 

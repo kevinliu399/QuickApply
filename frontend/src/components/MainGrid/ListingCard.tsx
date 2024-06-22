@@ -53,7 +53,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, description, 
   return (
     <div className="relative mx-10 mt-8" ref={cardRef}>
       <div
-        className="flex items-center justify-between bg-main-gray p-4 rounded-2xl shadow-2xl w-full"
+        className="flex items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full"
       >
         <div className="flex items-center justify-center flex-1">
           <p className="text-xl font-medium ml-6">{title}</p>
@@ -72,7 +72,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, description, 
             className="ml-1.5"
           />
         </div>
-        <div className="absolute right-5 flex items-center space-x-3 mx-2">
+        <div className="absolute right-3 flex items-center space-x-1">
           <button className="flex items-center justify-center bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg">
             <Pen size={20} />
           </button>
@@ -86,7 +86,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ title, company, description, 
       </div>
       <div className={`detail-card ${showDetailCard ? 'show' : ''}`}>
         <div className="flex justify-center w-full">
-          <div className="bg-main-gray bg-opacity-95 rounded-b-2xl shadow-2xl w-[98%] h-[200px] p-4">
+          <div className="bg-main-gray bg-opacity-95 rounded-b-2xl shadow-2xl w-[98%] p-4">
             <div className="grid grid-cols-3 h-full">
               <div>
                 <h1 className="text-lg font-semibold">Note:</h1>
