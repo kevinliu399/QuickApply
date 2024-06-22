@@ -26,4 +26,8 @@ public class User {
     public String getId() {
         return id != null ? id.toHexString() : null;
     }
+
+    public void setCommonLinks(List<String> commonLinks) {
+        this.commonLinks = commonLinks;
+    } 
 }
