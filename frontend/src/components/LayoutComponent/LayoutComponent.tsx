@@ -6,14 +6,16 @@ import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
 import ListingCard from '../MainGrid/ListingCard';
-import ListingCardGrid from '../MainGrid/ListingCardGrid';
 import HeaderTable from '../MainGrid/HeaderTable';
 
 const drawerWidth = 22; 
 
+
 const LayoutComponent: React.FC = () => {
   const [isloginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+
+  const currentWidth = `calc(100% - ${drawerWidth}%)`;
 
   const handleLoginOpen = () => {
     setLoginModalOpen(true);
@@ -33,7 +35,7 @@ const handleRegisterClose = () => {
 };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       
     {/* side bar */}
       <Drawer
@@ -50,14 +52,12 @@ const handleRegisterClose = () => {
         anchor="left"
       >
         <Sidebar />
-
       </Drawer>
 
     {/* Main part of the project */}
       <Box
         component="main"
         sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
-        
       >
         <LoginButton 
           label="Login"
@@ -65,18 +65,21 @@ const handleRegisterClose = () => {
         />
         <Titlebar />
         <HeaderTable />
-        <ListingCardGrid />
+        <NewListingForm />
       </Box>
-      <LoginModal
-            isOpen={isloginModalOpen}
-            onClick={handleLoginClose}
-            onSignUpClick={handleRegisterOpen}
+
+
+        <LoginModal
+              isOpen={isloginModalOpen}
+              onClick={handleLoginClose}
+              onSignUpClick={handleRegisterOpen}
+          />
+        <RegisterModal
+            isOpen={isRegisterModalOpen}
+            onClick={handleRegisterClose}
+            onSignInClick={handleLoginOpen}
         />
-      <RegisterModal
-          isOpen={isRegisterModalOpen}
-          onClick={handleRegisterClose}
-          onSignInClick={handleLoginOpen}
-      />
+
     
     </Box>
   );
