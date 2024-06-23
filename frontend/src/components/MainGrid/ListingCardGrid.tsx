@@ -77,21 +77,28 @@ const ListingCardGrid: React.FC = () => {
   const indexOfFirstListing = indexOfLastListing - listingsPerPage;
   const currentListings = listings.slice(indexOfFirstListing, indexOfLastListing);
 
-  // Change page
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   };
 
-  // Calculate the pages to be shown
   const getDisplayedPages = (count: number, page: number): (number | string)[] => {
     let pages: (number | string)[] = [];
-    if (page > 1) pages.push(1);
-    if (page > 3) pages.push('...');
-    if (page > 2) pages.push(page - 1);
-    pages.push(page);
-    if (page < count - 1) pages.push(page + 1);
-    if (page < count - 2) pages.push('...');
-    if (page < count) pages.push(count);
+    
+    if (count <= 5) {
+      pages = [...Array(count).keys()].map(n => n + 1);
+    } else {
+      if (page <= 3) {
+        // If current page is 1, 2, or 3, show 1, 2, 3, 4, ..., n
+        pages = [1, 2, 3, 4, '...', count];
+      } else if (page >= count - 2) {
+        // If current page is n, n-1, or n-2, show 1, ..., n-3, n-2, n-1, n
+        pages = [1, '...', count - 3, count - 2, count - 1, count];
+      } else {
+        // For all other cases, show 1, ..., previous, current, next, ..., n
+        pages = [1, '...', page - 1, page, page + 1, '...', count];
+      }
+    }
+
     return pages;
   };
 
@@ -126,9 +133,12 @@ const ListingCardGrid: React.FC = () => {
             <PaginationItem
               {...item}
               style={{
-                display: getDisplayedPages(Math.ceil(listings.length / listingsPerPage), currentPage).includes(item.page as number | string)
-                  ? 'flex'
-                  : 'none',
+                display:
+                  item.type === 'page'
+                    ? getDisplayedPages(Math.ceil(listings.length / listingsPerPage), currentPage).includes(item.page as number | string)
+                      ? 'flex'
+                      : 'none'
+                    : 'flex',
               }}
             />
           )}
