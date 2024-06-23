@@ -5,8 +5,9 @@ import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
-import ListingCard from '../MainGrid/ListingCard';
+// import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
+import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
 const drawerWidth = 22; 
 
@@ -65,7 +66,8 @@ const handleRegisterClose = () => {
         />
         <Titlebar />
         <HeaderTable />
-        <NewListingForm />
+        <ListingCardGrid />
+        {/* <NewListingForm /> */}
       </Box>
 
 
