@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Fab, Pagination, PaginationItem, TextField, Button, Checkbox, FormControlLabel } from '@mui/material';
-import ListingCard from './ListingCard';
+import { Fab, Pagination, PaginationItem, Checkbox, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import { useForm } from 'react-hook-form';
-import { Pen, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import ListingCard from './ListingCard';
+import ProgressBar from './ProgressBar';
+import './maingrid.css';
 
 const API_URL = 'http://localhost:8080/jobs'; // Change at production
+const API_URL_FOR_TAGS = 'http://localhost:8080/tags'; // Change at production
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -17,6 +20,7 @@ const CustomCheckbox = styled(Checkbox)({
 });
 
 interface Listing {
+  id: string;
   title?: string;
   company?: string;
   description?: string;
@@ -48,23 +52,45 @@ const CustomPagination = styled(Pagination)({
   },
 });
 
+const statusColor = (status: string) => {
+  switch (status) {
+    case 'Decision':
+      return 'bg-red-300';
+    case 'Interview':
+      return 'bg-yellow-200';
+    case 'Applied':
+      return 'bg-green-300';
+    default:
+      return 'bg-neutral-500';
+  }
+};
+
 const ListingCardGrid: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [listingsPerPage, setListingsPerPage] = useState(10);
   const [isAdding, setIsAdding] = useState(false);
-  const [newListing, setNewListing] = useState<Listing>({
-    title: '',
-    company: '',
-    description: '',
-    applied: false,
-    status: 'red',
-    applicationDate: '',
-    interviewDate: '',
-    offerDate: '',
-    tags: [],
+  const [allTags, setAllTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagInputValue, setTagInputValue] = useState('');
+
+  const { register, handleSubmit, reset, setValue, getValues, watch, formState: { errors } } = useForm<Listing>({
+    defaultValues: {
+      title: '',
+      company: '',
+      description: '',
+      applied: false,
+      applicationDate: '',
+      interviewDate: '',
+      offerDate: '',
+      tags: [],
+      status: 'Watching',
+    },
   });
+
+  const watchedStatus = watch('status', 'Watching');
+  const watchedApplied = watch('applied', false);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -88,6 +114,19 @@ const ListingCardGrid: React.FC = () => {
       setListingsPerPage(newPerPage > 0 ? newPerPage : 1);
     };
 
+    const fetchTags = async () => {
+      try {
+        const response = await fetch(API_URL_FOR_TAGS);
+        const data = await response.json();
+        setAllTags(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+        setAllTags([]);
+      }
+    };
+
+    fetchTags();
+
     updateListingsPerPage();
     window.addEventListener('resize', updateListingsPerPage);
 
@@ -101,7 +140,7 @@ const ListingCardGrid: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, tags: selectedTags }),
       });
 
       if (!response.ok) {
@@ -111,6 +150,8 @@ const ListingCardGrid: React.FC = () => {
       const newData = await response.json();
       setListings((prevListings) => [newData, ...prevListings]);
       setIsAdding(false);
+      reset();
+      setSelectedTags([]);
     } catch (error) {
       console.error('Error adding new listing:', error);
     }
@@ -118,18 +159,18 @@ const ListingCardGrid: React.FC = () => {
 
   const handleCancel = () => {
     setIsAdding(false);
+    reset();
+    setSelectedTags([]);
   };
 
-  const handleStatusClick = () => {
-    const nextStatus = newListing.status === 'red' ? 'yellow' : newListing.status === 'yellow' ? 'green' : 'red';
-    setNewListing({ ...newListing, status: nextStatus });
+  const handleStatusClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    const statuses = ['Watching', 'Applied', 'Interview', 'Decision'];
+    const currentStatus = getValues('status') || 'Watching';
+    const currentIndex = statuses.indexOf(currentStatus);
+    const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+    setValue('status', nextStatus);
   };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Listing>();
 
   const indexOfLastListing = currentPage * listingsPerPage;
   const indexOfFirstListing = indexOfLastListing - listingsPerPage;
@@ -157,55 +198,64 @@ const ListingCardGrid: React.FC = () => {
     return pages;
   };
 
-  const statusColor = (status: string) => {
-    switch (status) {
-      case 'red':
-        return 'bg-red-500';
-      case 'yellow':
-        return 'bg-yellow-500';
-      case 'green':
-        return 'bg-green-500';
-      default:
-        return 'bg-gray-500';
+  const handleApply = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue('applied', event.target.checked);
+  };
+
+  const handleTagInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInputValue(event.target.value);
+  };
+
+  const handleTagKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && tagInputValue.trim() !== '') {
+      event.preventDefault();
+      if (!selectedTags.includes(tagInputValue.trim())) {
+        setSelectedTags([...selectedTags, tagInputValue.trim()]);
+      }
+      setTagInputValue('');
     }
   };
 
-  const handleApply = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewListing({ ...newListing, applied: event.target.checked });
+  const handleRemoveTag = (tagToRemove: string) => {
+    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-hidden">
+    <div className="Job-Container flex flex-col h-full overflow-y-scroll">
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className="flex-grow overflow-y-hidden">
+        <div className="flex-grow">
           {isAdding && (
             <div>
               <form onSubmit={handleSubmit(handleAddListing)}>
                 <div className="relative mx-10 mt-8">
                   <div className="flex flex-row items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full">
                     <div className="flex items-center justify-center flex-1">
-                      <p className="text-xl font-medium ml-6">INPUT</p>
+                      <div className="text-xl ml-6 border-b-2 border-b-black ">
+                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type='text' placeholder='Software Developer' {...register('title')} />
+                      </div>
                     </div>
                     <div className="flex items-center justify-center flex-1">
-                      <p className="text-xl font-medium ml-4">COMPANY</p>
+                      <div className="text-xl ml-6 border-b-2 border-b-black">
+                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type='text' placeholder='Google' {...register('company')} />
+                      </div>
                     </div>
                     <div className="flex items-center justify-center flex-1 ml-2">
-                      <div className={`flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl`}></div>
+                      <div className={`flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl`}>
+                        <button type="button" onClick={handleStatusClick} className={`rounded-full w-8 h-8 ${statusColor(watchedStatus as string)}`}></button>
+                      </div>
                     </div>
                     <div className="flex items-center justify-center flex-1 mr-4">
                       <CustomCheckbox
                         onChange={handleApply}
                         inputProps={{ 'aria-label': 'controlled' }}
                         className="ml-1.5"
+                        checked={watchedApplied}
                       />
                     </div>
-                    <div className="absolute right-3 flex items-center space-x-1">
-                      <button className="flex items-center justify-center bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg">
-                        <Pen size={20} />
-                      </button>
-                      <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-lg">
+                    <div className="absolute right-3 flex items-center">
+                      <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-2xl" onClick={handleCancel}>
                         <Trash2 size={20} />
                       </button>
                     </div>
@@ -213,37 +263,51 @@ const ListingCardGrid: React.FC = () => {
                   <div>
                     <div className="flex justify-center w-full">
                       <div className="bg-main-gray bg-opacity-95 rounded-b-2xl shadow-2xl w-[98%] p-4">
-                        <div className="grid grid-cols-3 h-full">
+                        <div className="grid grid-cols-4">
                           <div>
                             <h1 className="text-lg font-semibold">Note:</h1>
-                            <p>DESC</p>
+                            <textarea
+                              className="rounded-md bg-white shadow-md p-2 focus:border-none focus:outline focus:outline-main-green ml-2 mt-2"
+                              maxLength={99}
+                              style={{ resize: 'none', width: '80%', height: '100px' }}
+                              {...register('description')}
+                            />
                           </div>
-
                           <div className="grid grid-cols-2 h-full">
                             <div className="text-md font-medium space-y-10">
                               <p>Application Date:</p>
                               <p>Interview Date:</p>
                               <p>Offer Date:</p>
                             </div>
-
                             <div className="space-y-10">
-                              <p>{'N/A'}</p>
-                              <p>{'N/A'}</p>
-                              <p>{'N/A'}</p>
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('applicationDate')} />
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('interviewDate')} />
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('offerDate')} />
                             </div>
                           </div>
-
+                          <div className="mt-2">
+                            <ProgressBar status={watchedStatus} />
+                          </div>
                           <div>
                             <h1 className="text-lg font-medium">Tags:</h1>
-                            {/* {tags && (
-                                  <div className="flex flex-wrap mt-2">
-                                    {tags.map((tag, index) => (
-                                      <span key={index} className="bg-blue-200 text-blue-800 rounded-full px-3 py-1 text-sm mr-2 mt-2">
-                                        {tag}
-                                      </span>
-                                    ))}
+                            <div className="tag-input-container">
+                              <input
+                                type="text"
+                                className="tag-input"
+                                placeholder="Add a tag"
+                                value={tagInputValue}
+                                onChange={handleTagInputChange}
+                                onKeyPress={handleTagKeyPress}
+                              />
+                              <div className="tag-list">
+                                {selectedTags.map((tag, index) => (
+                                  <div key={index} className="tag-item">
+                                    {tag}
+                                    <button type="button" onClick={() => handleRemoveTag(tag)}>x</button>
                                   </div>
-                                )} */}
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -253,9 +317,10 @@ const ListingCardGrid: React.FC = () => {
               </form>
             </div>
           )}
-          {currentListings.map((listing, index) => (
+          {currentListings.map((listing) => (
             <ListingCard
-              key={index}
+              key={listing.id}
+              id={listing.id}
               title={listing.title}
               company={listing.company}
               description={listing.description}
@@ -269,7 +334,6 @@ const ListingCardGrid: React.FC = () => {
           ))}
         </div>
       )}
-
       <div className="absolute justify-start mb-10 ml-10 bottom-5">
         <CustomPagination
           count={Math.ceil(listings.length / listingsPerPage)}
@@ -295,7 +359,7 @@ const ListingCardGrid: React.FC = () => {
         aria-label="add"
         onClick={() => {
           if (isAdding) {
-            handleAddListing(newListing);
+            handleSubmit(handleAddListing)();
           } else {
             setIsAdding(true);
           }
