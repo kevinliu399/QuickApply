@@ -318,9 +318,9 @@ const ListingCardGrid: React.FC = () => {
                               <p>Offer Date:</p>
                             </div>
                             <div className="space-y-10">
-                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('applicationDate')} />
-                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('interviewDate')} />
-                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-none focus:border-none px-2" {...register('offerDate')} />
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-main-green focus:border-none px-2" {...register('applicationDate')} />
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-main-green focus:border-none px-2" {...register('interviewDate')} />
+                              <input type="date" className="w-[150px] h-[30px] rounded-md shadow-md focus:outline-main-green focus:border-none px-2" {...register('offerDate')} />
                             </div>
                           </div>
                           <div className="mt-2">
