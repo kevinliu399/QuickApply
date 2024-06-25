@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/jobs")
@@ -37,5 +38,10 @@ public class JobsController {
     @DeleteMapping("/{id}")
     public void deleteJob(@PathVariable ObjectId id) {
         jobsService.deleteJob(id);
+    }
+
+    @GetMapping("/tags")
+    public Set<String> getAllUniqueTags() {
+        return jobsService.getAllUniqueTags();
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import './font.css';
+import './maingrid.css';
 
 const HeaderTable: React.FC = () => {
   return (
