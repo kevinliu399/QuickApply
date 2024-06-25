@@ -270,7 +270,7 @@ const ListingCardGrid: React.FC = () => {
                 <div className="relative mx-10 mt-8">
                   <div className="flex flex-row items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full">
                     <div className="flex items-center justify-center flex-1">
-                      <div className="text-xl ml-6 border-b-2 border-b-black">
+                      <div className="text-xl ml-6 border-b-2 border-b-black focus:border-b-main-green">
                         <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type="text" placeholder="Software Developer" {...register('title')} />
                       </div>
                     </div>
