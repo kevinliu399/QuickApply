@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Fab, Pagination, PaginationItem, Checkbox, TextField } from '@mui/material';
+import { Fab, Pagination, PaginationItem, Checkbox, TextField, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { styled } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
@@ -10,7 +10,7 @@ import ProgressBar from './ProgressBar';
 import './maingrid.css';
 
 const API_URL = 'http://localhost:8080/jobs'; // Change at production
-const API_URL_FOR_TAGS = 'http://localhost:8080/tags'; // Change at production
+const API_URL_FOR_TAGS = 'http://localhost:8080/jobs/tags'; // Change at production
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -65,6 +65,15 @@ const statusColor = (status: string) => {
   }
 };
 
+const generateRandomColor = () => {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 const ListingCardGrid: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,6 +83,8 @@ const ListingCardGrid: React.FC = () => {
   const [allTags, setAllTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagInputValue, setTagInputValue] = useState('');
+  const [isCustomTag, setIsCustomTag] = useState(false);
+  const [tagColors, setTagColors] = useState<{ [key: string]: string }>({});
 
   const { register, handleSubmit, reset, setValue, getValues, watch, formState: { errors } } = useForm<Listing>({
     defaultValues: {
@@ -133,6 +144,15 @@ const ListingCardGrid: React.FC = () => {
     return () => window.removeEventListener('resize', updateListingsPerPage);
   }, []);
 
+  useEffect(() => {
+    // Pre-generate colors for all tags
+    const initialTagColors = allTags.reduce((acc, tag) => {
+      acc[tag] = generateRandomColor();
+      return acc;
+    }, {} as { [key: string]: string });
+    setTagColors(initialTagColors);
+  }, [allTags]);
+
   const handleAddListing = async (data: Listing) => {
     try {
       const response = await fetch(API_URL, {
@@ -161,6 +181,7 @@ const ListingCardGrid: React.FC = () => {
     setIsAdding(false);
     reset();
     setSelectedTags([]);
+    setIsCustomTag(false);
   };
 
   const handleStatusClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -213,11 +234,28 @@ const ListingCardGrid: React.FC = () => {
         setSelectedTags([...selectedTags, tagInputValue.trim()]);
       }
       setTagInputValue('');
+      setIsCustomTag(false);
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleTagChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value;
+    if (value === '+ Custom Tag') {
+      setIsCustomTag(true);
+    } else {
+      setIsCustomTag(false);
+      if (!selectedTags.includes(value)) {
+        setSelectedTags([...selectedTags, value]);
+      }
+    }
+  };
+
+  const getTagColor = (tag: string) => {
+    return tagColors[tag] || generateRandomColor();
   };
 
   return (
@@ -232,17 +270,17 @@ const ListingCardGrid: React.FC = () => {
                 <div className="relative mx-10 mt-8">
                   <div className="flex flex-row items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full">
                     <div className="flex items-center justify-center flex-1">
-                      <div className="text-xl ml-6 border-b-2 border-b-black ">
-                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type='text' placeholder='Software Developer' {...register('title')} />
+                      <div className="text-xl ml-6 border-b-2 border-b-black">
+                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type="text" placeholder="Software Developer" {...register('title')} />
                       </div>
                     </div>
                     <div className="flex items-center justify-center flex-1">
                       <div className="text-xl ml-6 border-b-2 border-b-black">
-                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type='text' placeholder='Google' {...register('company')} />
+                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type="text" placeholder="Google" {...register('company')} />
                       </div>
                     </div>
                     <div className="flex items-center justify-center flex-1 ml-2">
-                      <div className={`flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl`}>
+                      <div className="flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl">
                         <button type="button" onClick={handleStatusClick} className={`rounded-full w-8 h-8 ${statusColor(watchedStatus as string)}`}></button>
                       </div>
                     </div>
@@ -255,7 +293,7 @@ const ListingCardGrid: React.FC = () => {
                       />
                     </div>
                     <div className="absolute right-3 flex items-center">
-                      <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-2xl" onClick={handleCancel}>
+                      <button type="button" className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-2xl" onClick={handleCancel}>
                         <Trash2 size={20} />
                       </button>
                     </div>
@@ -291,21 +329,39 @@ const ListingCardGrid: React.FC = () => {
                           <div>
                             <h1 className="text-lg font-medium">Tags:</h1>
                             <div className="tag-input-container">
-                              <input
-                                type="text"
-                                className="tag-input"
-                                placeholder="Add a tag"
-                                value={tagInputValue}
-                                onChange={handleTagInputChange}
-                                onKeyPress={handleTagKeyPress}
-                              />
-                              <div className="tag-list">
-                                {selectedTags.map((tag, index) => (
-                                  <div key={index} className="tag-item">
-                                    {tag}
-                                    <button type="button" onClick={() => handleRemoveTag(tag)}>x</button>
-                                  </div>
-                                ))}
+                              {isCustomTag ? (
+                                <input
+                                  value={tagInputValue}
+                                  onChange={handleTagInputChange}
+                                  onKeyPress={handleTagKeyPress}
+                                  placeholder="Enter new tag"
+                                  className="rounded-md bg-white shadow-md p-2 focus:border-none focus:outline focus:outline-main-green"
+                                />
+                              ) : (
+                                <Select
+                                  value=""
+                                  onChange={handleTagChange}
+                                  displayEmpty
+                                >
+                                  <MenuItem value="" disabled>
+                                    Add a tag
+                                  </MenuItem>
+                                  <MenuItem value="+ Custom Tag">+ Custom Tag</MenuItem>
+                                  {allTags.map((tag, index) => (
+                                    <MenuItem key={index} value={tag}>
+                                      {tag}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              )}
+                              <div className="w-full">
+                                <div className="tag-list flex flex-wrap space-x-2 w-full ">
+                                  {selectedTags.map((tag, index) => (
+                                    <div key={index} className="tag-item text-main-black rounded-full px-3 py-1 text-sm mt-2" style={{ backgroundColor: getTagColor(tag) }}>
+                                      <button className="hover:line-through" onClick={() => handleRemoveTag(tag)}>{tag}</button>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -330,6 +386,7 @@ const ListingCardGrid: React.FC = () => {
               interviewDate={listing.interviewDate}
               offerDate={listing.offerDate}
               tags={listing.tags}
+              tagColors={tagColors}
             />
           ))}
         </div>

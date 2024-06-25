@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Checkbox } from '@mui/material';
-import { Check, Trash2, Pen } from 'lucide-react';
+import { Check, Trash2, Pen, ArrowDownNarrowWide } from 'lucide-react';
 import { styled } from '@mui/system';
-import { ArrowDownNarrowWide } from 'lucide-react';
-import './maingrid.css';
 import ProgressBar from './ProgressBar';
+import './maingrid.css';
+
+const id = 'your-id'; // Replace 'your-id' with the actual value of id
+const API_URL = `https://localhost:8080/jobs/${id}`;
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -24,10 +26,10 @@ interface ListingCardProps {
   offerDate?: string;
   tags?: string[];
   applied?: boolean;
+  tagColors: { [key: string]: string };
 }
 
-
-const ListingCard: React.FC<ListingCardProps> = ({ id, title, company, description, status, applicationDate, interviewDate, offerDate, tags, applied }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ id, title, company, description, status, applicationDate, interviewDate, offerDate, tags, applied, tagColors }) => {
   const [isApplied, setIsApplied] = useState(applied || false);
   const [showDetailCard, setShowDetailCard] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -109,7 +111,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ id, title, company, descripti
                 {tags && (
                   <div className="flex flex-wrap mt-2">
                     {tags.map((tag, index) => (
-                      <span key={index} className="bg-blue-200 text-blue-800 rounded-full px-3 py-1 text-sm mr-2 mt-2">
+                      <span key={index} className="text-main-black rounded-full px-3 py-1 text-sm mr-2 mt-2" style={{ backgroundColor: tagColors[tag] }}>
                         {tag}
                       </span>
                     ))}
