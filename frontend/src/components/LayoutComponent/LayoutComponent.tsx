@@ -7,7 +7,7 @@ import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
 // import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
-import NewListingForm from '../MainGrid/NewListingForm';
+// import NewListingForm from '../MainGrid/NewListingForm';
 import { AuthContext } from '../../context/AuthContext'; 
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
@@ -46,13 +46,9 @@ const LayoutComponent: React.FC = () => {
   };
 
   return (
-<<<<<<< HEAD
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-=======
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       
     {/* side bar */}
->>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
       <Drawer
         sx={{
           width: `${drawerWidth}%`,
@@ -71,11 +67,7 @@ const LayoutComponent: React.FC = () => {
 
       <Box
         component="main"
-<<<<<<< HEAD
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030' }}
-=======
         sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
->>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
       >
         {!user ? (
           <LoginButton 
@@ -90,8 +82,7 @@ const LayoutComponent: React.FC = () => {
 
         <Titlebar />
         <HeaderTable />
-<<<<<<< HEAD
-        <NewListingForm />
+        {/* <NewListingForm /> */}
       </Box>
       <LoginModal
         isOpen={isloginModalOpen}
@@ -103,11 +94,9 @@ const LayoutComponent: React.FC = () => {
         onClick={handleRegisterClose}
         onSignInClick={handleLoginOpen}
       />
-=======
         <ListingCardGrid />
         {/* <NewListingForm /> */}
-      </Box>
-
+      
 
         <LoginModal
               isOpen={isloginModalOpen}
@@ -121,7 +110,6 @@ const LayoutComponent: React.FC = () => {
         />
 
     
->>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
     </Box>
   );
 };
