@@ -1,23 +1,32 @@
-FROM maven:3.8.1-openjdk-11 AS build
+# Use an official Maven image to build the application
+FROM maven:3.8.5-openjdk-17-slim AS build
 
+# Set the working directory inside the container
 WORKDIR /app
 
+# Copy the pom.xml file to download dependencies
 COPY pom.xml .
+
+# Download all necessary dependencies
+RUN mvn dependency:go-offline
+
+# Copy the rest of the application source code
 COPY src ./src
 
-RUN mvn clean package
+# Package the application
+RUN mvn package -DskipTests
 
-FROM openjdk:11-jre-slim
+# Use an official OpenJDK runtime as a parent image
+FROM openjdk:17-jdk-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
+# Copy the packaged jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-RUN apt-get update && apt-get install -y \
-    mongodb-clients && \
-    rm -rf /var/lib/apt/lists/*
-
+# Expose the port the application will run on
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
-
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "app.jar"]
