@@ -5,20 +5,23 @@ import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
-import ListingCard from '../MainGrid/ListingCard';
-import ListingCardGrid from '../MainGrid/ListingCardGrid';
+// import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
 import NewListingForm from '../MainGrid/NewListingForm';
 import { AuthContext } from '../../context/AuthContext'; 
 import authService from '../../services/authService';
+import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
 const drawerWidth = 22; 
+
 
 const LayoutComponent: React.FC = () => {
   const { user, setUser } = useContext(AuthContext);
 
   const [isloginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+
+  const currentWidth = `calc(100% - ${drawerWidth}%)`;
 
   const handleLoginOpen = () => {
     setLoginModalOpen(true);
@@ -43,7 +46,13 @@ const LayoutComponent: React.FC = () => {
   };
 
   return (
+<<<<<<< HEAD
     <Box sx={{ display: 'flex', height: '100vh' }}>
+=======
+    <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      
+    {/* side bar */}
+>>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
       <Drawer
         sx={{
           width: `${drawerWidth}%`,
@@ -62,7 +71,11 @@ const LayoutComponent: React.FC = () => {
 
       <Box
         component="main"
+<<<<<<< HEAD
         sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030' }}
+=======
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
+>>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
       >
         {!user ? (
           <LoginButton 
@@ -77,6 +90,7 @@ const LayoutComponent: React.FC = () => {
 
         <Titlebar />
         <HeaderTable />
+<<<<<<< HEAD
         <NewListingForm />
       </Box>
       <LoginModal
@@ -89,6 +103,25 @@ const LayoutComponent: React.FC = () => {
         onClick={handleRegisterClose}
         onSignInClick={handleLoginOpen}
       />
+=======
+        <ListingCardGrid />
+        {/* <NewListingForm /> */}
+      </Box>
+
+
+        <LoginModal
+              isOpen={isloginModalOpen}
+              onClick={handleLoginClose}
+              onSignUpClick={handleRegisterOpen}
+          />
+        <RegisterModal
+            isOpen={isRegisterModalOpen}
+            onClick={handleRegisterClose}
+            onSignInClick={handleLoginOpen}
+        />
+
+    
+>>>>>>> 9fece379a00ce033ed2632b6356b189d37c1f4e1
     </Box>
   );
 };

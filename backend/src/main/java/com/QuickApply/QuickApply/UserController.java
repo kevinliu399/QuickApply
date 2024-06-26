@@ -44,4 +44,22 @@ public class UserController {
     //     Optional<User> user = userService.getUserByUsername(username);
     //     return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     // }
+
+    @GetMapping("/{id}/commonLinks")
+    public List<String> getCommonLinks(@PathVariable ObjectId id) {
+        Optional<User> user = userService.getUserById(id);
+        return user.map(User::getCommonLinks).orElse(null);
+    }
+
+    @PutMapping("/{id}/commonLinks")
+    public ResponseEntity<User> updateCommonLinks(@PathVariable ObjectId id, @RequestBody List<String> commonLinks) {
+        Optional<User> userOptional = userService.getUserById(id);
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+        User user = userOptional.get();
+        user.setCommonLinks(commonLinks);
+        userService.saveUser(user); // Make sure you have a saveUser method in your UserService
+        return ResponseEntity.ok(user);
+    }
 }

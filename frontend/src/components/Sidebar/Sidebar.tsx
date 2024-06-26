@@ -1,7 +1,6 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; // Import icons from Lucide
 import './Sidebar.css';
-
 
 // TextWithCopyIcon component
 const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, isEditing, onChange, onCopy, onClear }) => (
@@ -21,12 +20,14 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onClear} 
+        style={{ maxWidth: "20px" }}
       />
     ) : (
       <Copy 
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
         onClick={onCopy} 
+        style={{ maxWidth: "20px" }}
       />
     )}
   </div>
@@ -34,7 +35,7 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
 
 // TextWithIcon component
 const TextWithIcon: React.FC<{ text: string, icon: React.ReactNode, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, icon, isEditing, onChange, onCopy, onClear }) => (
-  <div className="flex items-center my-2 w-4/5 my-3 p-3 rounded-md" >
+  <div className="flex items-center my-2 w-4/5 p-3 rounded-md" >
     <div className="mr-7 text-3xl">{icon}</div>
     <TextWithCopyIcon text={text} isEditing={isEditing} onChange={onChange} onCopy={onCopy} onClear={onClear} />
   </div>
@@ -70,7 +71,35 @@ const Sidebar: React.FC = () => {
     { text: 'Text 4', icon: <Github className="text-[#67ffa4]" /> },
   ]);
 
+  useEffect(() => {
+    getCommonLinks();
+  }, []);
+
   const handleEditClick = () => {
+    if (isEditing) {
+      const commonLinks = texts.map((item) => item.text);
+
+      fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(commonLinks),
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Common links updated successfully:', data);
+      })
+      .catch(error => {
+        console.error('Error updating common links:', error);
+      });
+      // getCommonLinks(commonLinks);
+    }
     setIsEditing(!isEditing);
   };
 
@@ -95,6 +124,21 @@ const Sidebar: React.FC = () => {
     setTexts(newTexts);
   };
 
+  const getCommonLinks = () => {
+    fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`)
+      .then(response => response.json())
+      .then(data => {
+        const updatedTexts = texts.map((item, index) => ({
+          ...item,
+          text: data[index] || '' // Assign fetched commonLinks values to text fields
+        }));
+        setTexts(updatedTexts);
+      })
+      .catch(error => {
+        console.error('Error fetching common links:', error);
+      });
+};
+
   return (
     <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
       <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
@@ -113,3 +157,27 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+
+  /*
+  return (
+    <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
+      <label className="hamburger-menu">
+        <input type="checkbox"/>
+      </label>
+      <div className="sidebar w-full">
+        <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
+          QuickApply
+        </h1>
+        <SidebarContent
+          texts={texts} 
+          isEditing={isEditing} 
+          handleTextChange={handleTextChange} 
+          handleCopyClick={handleCopyClick} 
+          handleEditClick={handleEditClick} 
+          handleClearClick={handleClearClick} 
+        />
+      </div>
+    </div>
+  );
+};
+*/

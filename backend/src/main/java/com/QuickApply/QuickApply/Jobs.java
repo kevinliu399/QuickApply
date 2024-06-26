@@ -27,4 +27,8 @@ public class Jobs {
     private LocalDate interviewDate;
     private LocalDate offerDate;
     private List<String> tags;
+
+    public String getId() {
+        return id != null ? id.toHexString() : null;
+    }
 }

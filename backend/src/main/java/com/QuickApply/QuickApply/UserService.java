@@ -39,4 +39,8 @@ public class UserService {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
     }
+    
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }    
 }

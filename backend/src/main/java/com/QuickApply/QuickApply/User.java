@@ -98,4 +98,8 @@ public class User implements UserDetails{
 
     
     
+
+    public void setCommonLinks(List<String> commonLinks) {
+        this.commonLinks = commonLinks;
+    } 
 }
