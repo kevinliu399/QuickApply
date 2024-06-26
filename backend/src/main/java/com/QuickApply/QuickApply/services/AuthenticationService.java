@@ -22,6 +22,7 @@ import com.QuickApply.QuickApply.User;
 import com.QuickApply.QuickApply.models.LoginResponseDTO;
 import com.QuickApply.QuickApply.models.Role;
 import com.QuickApply.QuickApply.repository.RoleRepository;
+import com.mongodb.DuplicateKeyException;
 import com.QuickApply.QuickApply.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -55,7 +56,10 @@ public class AuthenticationService {
 
       System.out.println( "In the register user");
         
-
+      if (userRepository.findByUsername(username).isPresent()) {
+        throw new RuntimeException("Username already exists");
+      }
+      
         String encodedPassword = passwordEncoder.encode(password);
         // Role userRole = roleRepository.findByAuthority("USER").get();
 
@@ -71,6 +75,10 @@ public class AuthenticationService {
 
         return userRepository.save(new User(id, username, encodedPassword, email, commonLinks, jobIds ));
 
+      
+        
+       
+
     
     }
 
@@ -81,11 +89,16 @@ public class AuthenticationService {
     // send to Token service and spit out a token
     public LoginResponseDTO loginUser(String username, String password){
         try{
+          System.out.println("Attempting to authenticate user: " + username);
             Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
             );
 
+            System.out.println("Authentication successful for user: " + username);
+
             String token = TokenService.generateJwt(auth);
+
+            System.out.println("Generated token for user: " + username);
 
             return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
 

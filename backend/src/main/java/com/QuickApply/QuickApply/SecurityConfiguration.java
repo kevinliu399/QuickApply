@@ -1,5 +1,6 @@
 package com.QuickApply.QuickApply;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,8 @@ import com.QuickApply.QuickApply.utils.RSAKeyProperties;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    
+
     private final RSAKeyProperties keys;
     private final UserDetailsService userDetailsService;
 
@@ -57,7 +60,7 @@ public class SecurityConfiguration {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> {
-                auth.requestMatchers("/auth/register").permitAll();
+                auth.requestMatchers("/auth/**").permitAll();
                 auth.anyRequest().authenticated();
             })
             .oauth2ResourceServer(oauth2ResourceServer ->

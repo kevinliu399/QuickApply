@@ -31,15 +31,15 @@ public class TokenService {
 
     Instant now = Instant.now();
 
-    String scope = auth.getAuthorities().stream()
-      .map(GrantedAuthority::getAuthority)
-      .collect(Collectors.joining(" "));
+    // String scope = auth.getAuthorities().stream()
+    //   .map(GrantedAuthority::getAuthority)
+    //   .collect(Collectors.joining(" "));
 
     JwtClaimsSet claims = JwtClaimsSet.builder()
       .issuer("self")
       .issuedAt(now)
       .subject(auth.getName())
-      .claim("roles", scope)
+      .claim("roles", "USER")
       .build();
 
 

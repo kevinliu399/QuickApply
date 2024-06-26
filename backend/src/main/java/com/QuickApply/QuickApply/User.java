@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.hibernate.mapping.Collection;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,12 +27,14 @@ import java.util.Set;
 public class User implements UserDetails{
     @Id
     private ObjectId id;
+
+    @Indexed(unique = true)
     private String username;
     private String password;
     private String email;
     private List<String> commonLinks;
     private List<Jobs> jobIds;
-    // private Set<Role> authorities;
+    
    
 
     public String getId() {
@@ -61,9 +64,7 @@ public class User implements UserDetails{
         this.id = userId;
     }
 
-    // public void setAuthorities(Set<Role> authorities) {
-    //     this.authorities = authorities;
-    // }
+
 
     @Override
     public java.util.Collection<? extends GrantedAuthority> getAuthorities() {
