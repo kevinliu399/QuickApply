@@ -64,6 +64,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
     const [password, setPassword] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
 
+    const [errMsg, setErrMsg] = useState('');
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
@@ -84,7 +86,9 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
 
             if (response.ok) {
                 setIsSuccess(true);
+                setErrMsg('');
             } else {
+                setErrMsg('Username already exists')
                 console.error('Registration failed');
             }
         } catch (error) {
@@ -143,8 +147,17 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                                 <button type="submit" className="text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign Up</button>
                             </div>
                         </form>
+                        {errMsg && (
+
+                          <p style={{color: 'red'}}>
+                            {errMsg}
+                          </p>
+                          )}
                         <p className="mt-4">Already have an account? <a className="text-gray-400 hover:text-main-green hover:duration-200 hover:underline cursor-pointer" onClick={onSignInClick}>Sign In</a></p>
+                        
                     </div>
+                    
+                  
                 )}
                 {isSuccess && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

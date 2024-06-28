@@ -167,6 +167,15 @@ const Sidebar: React.FC = () => {
       <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
         QuickApply
       </h1>
+
+      {!user &&
+      <p style={{ color: 'white'}}>
+        PLEASE LOG IN TO ACCESS COMMON LINKS
+      </p>
+      
+      }
+      {user &&  
+      
       <SidebarContent 
         texts={texts} 
         isEditing={isEditing} 
@@ -174,7 +183,8 @@ const Sidebar: React.FC = () => {
         handleCopyClick={handleCopyClick} 
         handleEditClick={handleEditClick} 
         handleClearClick={handleClearClick} 
-      />
+      />}
+     
     </div>
   );
 };
