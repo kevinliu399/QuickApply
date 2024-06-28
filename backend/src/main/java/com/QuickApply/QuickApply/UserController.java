@@ -10,10 +10,16 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin("*")
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/")
+    public String helloUserController(){
+        return "User access level";
+    }
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -33,11 +39,11 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/username/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        Optional<User> user = userService.getUserByUsername(username);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
+    // @GetMapping("/username/{username}")
+    // public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+    //     Optional<User> user = userService.getUserByUsername(username);
+    //     return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    // }
 
     @GetMapping("/{id}/commonLinks")
     public List<String> getCommonLinks(@PathVariable ObjectId id) {
