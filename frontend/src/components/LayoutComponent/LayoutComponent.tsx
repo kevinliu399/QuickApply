@@ -8,7 +8,7 @@ import RegisterModal from '../../modals/register';
 // import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
 // import NewListingForm from '../MainGrid/NewListingForm';
-import { AuthContext } from '../../context/AuthContext'; 
+import { AuthContext } from '../../context/AuthContext';
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
@@ -93,17 +93,6 @@ const LayoutComponent: React.FC = () => {
         {/* <NewListingForm /> */}
       </Box>
 
-
-        <LoginModal
-              isOpen={isloginModalOpen}
-              onClick={handleLoginClose}
-              onSignUpClick={handleRegisterOpen}
-          />
-        <RegisterModal
-            isOpen={isRegisterModalOpen}
-            onClick={handleRegisterClose}
-            onSignInClick={handleLoginOpen}
-        />
 
 
     </Box>
