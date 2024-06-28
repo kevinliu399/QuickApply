@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Fab, Pagination, PaginationItem, Checkbox, TextField, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { styled } from '@mui/system';
 import AddIcon from '@mui/icons-material/Add';
@@ -8,6 +8,8 @@ import { Trash2 } from 'lucide-react';
 import ListingCard from './ListingCard';
 import ProgressBar from './ProgressBar';
 import './maingrid.css';
+
+import { AuthContext } from '../../context/AuthContext';
 
 const API_URL = 'http://localhost:8080/jobs'; // Change at production
 const API_URL_FOR_TAGS = 'http://localhost:8080/jobs/tags'; // Change at production
@@ -103,10 +105,26 @@ const ListingCardGrid: React.FC = () => {
   const watchedStatus = watch('status', 'Watching');
   const watchedApplied = watch('applied', false);
 
-  useEffect(() => {
-    const fetchListings = async () => {
+  const { user } = useContext(AuthContext);
+
+  const fetchListings = async () => {
+    if (user && user.accessToken) {
+      const getHeaders = () => {
+        return {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.accessToken}`,
+        };
+      };
+
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+          headers: getHeaders(),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
         const data = await response.json();
         setListings(data);
         setLoading(false);
@@ -114,29 +132,40 @@ const ListingCardGrid: React.FC = () => {
         console.error('Error fetching listings:', error);
         setLoading(false);
       }
-    };
+    }
+  };
 
-    fetchListings();
+  useEffect(() => {
+    if (user && user.accessToken) {
+      fetchListings();
 
+      const fetchTags = async () => {
+        try {
+          const response = await fetch(API_URL_FOR_TAGS, {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+          });
+          const data = await response.json();
+          setAllTags(Array.isArray(data) ? data : []);
+        } catch (error) {
+          console.error('Error fetching tags:', error);
+          setAllTags([]);
+        }
+      };
+
+      fetchTags();
+    }
+  }, [user]);
+
+  useEffect(() => {
     const updateListingsPerPage = () => {
       const viewportHeight = window.innerHeight;
       const cardHeight = 150;
       const newPerPage = Math.floor((viewportHeight - 200) / cardHeight);
       setListingsPerPage(newPerPage > 0 ? newPerPage : 1);
     };
-
-    const fetchTags = async () => {
-      try {
-        const response = await fetch(API_URL_FOR_TAGS);
-        const data = await response.json();
-        setAllTags(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching tags:', error);
-        setAllTags([]);
-      }
-    };
-
-    fetchTags();
 
     updateListingsPerPage();
     window.addEventListener('resize', updateListingsPerPage);
@@ -145,7 +174,6 @@ const ListingCardGrid: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Pre-generate colors for all tags
     const initialTagColors = allTags.reduce((acc, tag) => {
       acc[tag] = generateRandomColor();
       return acc;
@@ -159,6 +187,7 @@ const ListingCardGrid: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${user?.accessToken}`,
         },
         body: JSON.stringify({ ...data, tags: selectedTags }),
       });

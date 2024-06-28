@@ -12,7 +12,7 @@ import { AuthContext } from '../../context/AuthContext';
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
-const drawerWidth = 22; 
+const drawerWidth = 22;
 
 
 const LayoutComponent: React.FC = () => {
@@ -47,8 +47,8 @@ const LayoutComponent: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      
-    {/* side bar */}
+
+      {/* side bar */}
       <Drawer
         sx={{
           width: `${drawerWidth}%`,
@@ -67,36 +67,32 @@ const LayoutComponent: React.FC = () => {
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030' }}
       >
         {!user ? (
-          <LoginButton 
+          <LoginButton
             label="Login"
             onClick={handleLoginOpen}
           />
         ) : (
           <Button onClick={logoutClick}>
-            Logout { user?.username }
+            Logout {user?.username}
           </Button>
         )}
 
         <Titlebar />
-        <HeaderTable />
+        {user && <HeaderTable />}
+        {!user && 
+        <Box sx={{ml: 50, mt: 50}}>
+          PLEASE LOG IN TO ADD JOB LISTINGS
+        </Box>
+        
+        }
+        {user && <ListingCardGrid />}
+        
         {/* <NewListingForm /> */}
       </Box>
-      <LoginModal
-        isOpen={isloginModalOpen}
-        onClick={handleLoginClose}
-        onSignUpClick={handleRegisterOpen}
-      />
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClick={handleRegisterClose}
-        onSignInClick={handleLoginOpen}
-      />
-        <ListingCardGrid />
-        {/* <NewListingForm /> */}
-      
+
 
         <LoginModal
               isOpen={isloginModalOpen}
@@ -109,7 +105,7 @@ const LayoutComponent: React.FC = () => {
             onSignInClick={handleLoginOpen}
         />
 
-    
+
     </Box>
   );
 };
