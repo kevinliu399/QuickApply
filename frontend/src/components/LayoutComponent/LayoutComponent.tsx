@@ -8,11 +8,11 @@ import RegisterModal from '../../modals/register';
 // import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
 // import NewListingForm from '../MainGrid/NewListingForm';
-import { AuthContext } from '../../context/AuthContext'; 
+import { AuthContext } from '../../context/AuthContext';
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
-const drawerWidth = 22; 
+const drawerWidth = 22;
 
 
 const LayoutComponent: React.FC = () => {
@@ -47,8 +47,8 @@ const LayoutComponent: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      
-    {/* side bar */}
+
+      {/* side bar */}
       <Drawer
         sx={{
           width: `${drawerWidth}%`,
@@ -67,21 +67,22 @@ const LayoutComponent: React.FC = () => {
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030' }}
       >
         {!user ? (
-          <LoginButton 
+          <LoginButton
             label="Login"
             onClick={handleLoginOpen}
           />
         ) : (
           <Button onClick={logoutClick}>
-            Logout { user?.username }
+            Logout {user?.username}
           </Button>
         )}
 
         <Titlebar />
         <HeaderTable />
+        <ListingCardGrid />
         {/* <NewListingForm /> */}
       </Box>
       <LoginModal
@@ -94,22 +95,8 @@ const LayoutComponent: React.FC = () => {
         onClick={handleRegisterClose}
         onSignInClick={handleLoginOpen}
       />
-        <ListingCardGrid />
-        {/* <NewListingForm /> */}
-      
 
-        <LoginModal
-              isOpen={isloginModalOpen}
-              onClick={handleLoginClose}
-              onSignUpClick={handleRegisterOpen}
-          />
-        <RegisterModal
-            isOpen={isRegisterModalOpen}
-            onClick={handleRegisterClose}
-            onSignInClick={handleLoginOpen}
-        />
 
-    
     </Box>
   );
 };
