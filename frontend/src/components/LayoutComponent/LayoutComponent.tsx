@@ -92,6 +92,16 @@ const LayoutComponent: React.FC = () => {
         
         {/* <NewListingForm /> */}
       </Box>
+      <LoginModal
+        isOpen={isloginModalOpen}
+        onClick={handleLoginClose}
+        onSignUpClick={handleRegisterOpen}
+      />
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClick={handleRegisterClose}
+        onSignInClick={handleLoginOpen}
+      />
 
 
 

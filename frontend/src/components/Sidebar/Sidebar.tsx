@@ -74,13 +74,12 @@ const Sidebar: React.FC = () => {
 
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    getCommonLinks();
-  }, []);
+  
 
   const handleEditClick = () => {
     if (isEditing) {
       const commonLinks = texts.map((item) => item.text);
+
 
       fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
         method: 'PUT',
@@ -130,12 +129,19 @@ const Sidebar: React.FC = () => {
   };
 
   const getCommonLinks = () => {
-    fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
-      headers: {
+    const getHeaders = () => {
+      return {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${user?.accessToken}`,
-      },
-    })
+      };
+    };
+
+    if (user && user.accessToken) {
+      console.log(user)
+
+      fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
+        headers: getHeaders()
+      })
       .then(response => response.json())
       .then(data => {
         const updatedTexts = texts.map((item, index) => ({
@@ -147,7 +153,14 @@ const Sidebar: React.FC = () => {
       .catch(error => {
         console.error('Error fetching common links:', error);
       });
+    }
+
+    
 };
+
+    useEffect(() => {
+      getCommonLinks();
+    }, [user]);
 
   return (
     <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
