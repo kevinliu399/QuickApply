@@ -10,6 +10,7 @@ type LoginModalProps = {
     onClick?: () => void;
     onSignUpClick?: () => void;
     isOpen?: boolean;
+    onLoginSuccess?: () => void; // Add this prop
 };
 
 type CustomTextFieldProps = {
@@ -61,7 +62,7 @@ const CustomTextField = styled(
   },
 }));
 
-const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick, onLoginSuccess }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -72,11 +73,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick 
           const response = await authService.login(username, password);
           
           // Update the AuthContext with the logged-in user
-          setUser(response.user)
+          setUser(response.user);
 
           console.log(response);
+          // Notify the parent component about the successful login
+          if (onLoginSuccess) onLoginSuccess();
           // Redirect or close modal after successful login
           if (onClick) onClick();
+
+          window.location.reload();
       } catch (err) {
           setError('Invalid username or password');
       }

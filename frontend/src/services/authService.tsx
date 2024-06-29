@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/auth/'; // Replace with your backend URL
+const API_URL = 'http://localhost:8080/auth/'; 
 
 interface User {
   id: string;
@@ -41,6 +41,7 @@ const login = async (username: string, password: string): Promise<AuthResponse> 
 
 const logout = (): void => {
   localStorage.removeItem('user');
+  window.location.reload();
 };
 
 const getCurrentUser = (): User | null => {

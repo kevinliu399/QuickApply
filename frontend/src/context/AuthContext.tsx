@@ -4,7 +4,6 @@ import authService from '../services/authService';
 interface User {
   id: string;
   username: string;
-  password: string;
   email: string;
   commonLinks: any[];
   jobIds: any[];
@@ -20,14 +19,9 @@ interface User {
   accessToken?: string;
 }
 
-interface AuthResponse {
-  user: User;
-  jwt: string;
-}
-
 interface AuthContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 export const AuthContext = createContext<AuthContextType>({

@@ -1,6 +1,7 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect, useContext } from 'react';
 import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; // Import icons from Lucide
 import './Sidebar.css';
+import { AuthContext } from '../../context/AuthContext';
 
 // TextWithCopyIcon component
 const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, isEditing, onChange, onCopy, onClear }) => (
@@ -71,19 +72,22 @@ const Sidebar: React.FC = () => {
     { text: 'Text 4', icon: <Github className="text-[#67ffa4]" /> },
   ]);
 
-  useEffect(() => {
-    getCommonLinks();
-  }, []);
+  const { user } = useContext(AuthContext);
+
+  
 
   const handleEditClick = () => {
     if (isEditing) {
       const commonLinks = texts.map((item) => item.text);
 
+
       fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${user?.accessToken}`,
         },
+        
         body: JSON.stringify(commonLinks),
       })
       .then(response => {
@@ -125,7 +129,19 @@ const Sidebar: React.FC = () => {
   };
 
   const getCommonLinks = () => {
-    fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`)
+    const getHeaders = () => {
+      return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user?.accessToken}`,
+      };
+    };
+
+    if (user && user.accessToken) {
+      console.log(user)
+
+      fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
+        headers: getHeaders()
+      })
       .then(response => response.json())
       .then(data => {
         const updatedTexts = texts.map((item, index) => ({
@@ -137,13 +153,29 @@ const Sidebar: React.FC = () => {
       .catch(error => {
         console.error('Error fetching common links:', error);
       });
+    }
+
+    
 };
+
+    useEffect(() => {
+      getCommonLinks();
+    }, [user]);
 
   return (
     <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
       <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
         QuickApply
       </h1>
+
+      {!user &&
+      <p style={{ color: 'white'}}>
+        PLEASE LOG IN TO ACCESS COMMON LINKS
+      </p>
+      
+      }
+      {user &&  
+      
       <SidebarContent 
         texts={texts} 
         isEditing={isEditing} 
@@ -151,7 +183,8 @@ const Sidebar: React.FC = () => {
         handleCopyClick={handleCopyClick} 
         handleEditClick={handleEditClick} 
         handleClearClick={handleClearClick} 
-      />
+      />}
+     
     </div>
   );
 };

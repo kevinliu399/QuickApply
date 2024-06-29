@@ -14,7 +14,6 @@ import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
 const drawerWidth = 22;
 
-
 const LayoutComponent: React.FC = () => {
   const { user, setUser } = useContext(AuthContext);
 
@@ -47,7 +46,6 @@ const LayoutComponent: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-
       {/* side bar */}
       <Drawer
         sx={{
@@ -67,24 +65,32 @@ const LayoutComponent: React.FC = () => {
 
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030' }}
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030', position: 'relative' }}
       >
-        {!user ? (
-          <LoginButton
-            label="Login"
-            onClick={handleLoginOpen}
-          />
-        ) : (
-          <Button onClick={logoutClick}>
-            Logout {user?.username}
-          </Button>
-        )}
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          {!user ? (
+            <LoginButton
+              label="Login"
+              onClick={handleLoginOpen}
+            />
+          ) : (
+            <Button onClick={logoutClick}>
+              Logout {user?.username}
+            </Button>
+          )}
+        </Box>
 
         <Titlebar />
-        <HeaderTable />
-        <ListingCardGrid />
+        {user && <HeaderTable />}
+        {!user && 
+        <Box sx={{ml: 50, mt: 50}}>
+          PLEASE LOG IN TO ADD JOB LISTINGS
+        </Box>
+        }
+        {user && <ListingCardGrid />}
         {/* <NewListingForm /> */}
       </Box>
+
       <LoginModal
         isOpen={isloginModalOpen}
         onClick={handleLoginClose}
@@ -95,8 +101,6 @@ const LayoutComponent: React.FC = () => {
         onClick={handleRegisterClose}
         onSignInClick={handleLoginOpen}
       />
-
-
     </Box>
   );
 };
