@@ -16,32 +16,32 @@ public class JobsController {
     private JobsService jobsService;
 
     @PostMapping
-    public Jobs createJob(@RequestBody Jobs job) {
-        return jobsService.createJob(job);
+    public Jobs createJob(@RequestBody Jobs job, @RequestHeader("userId") ObjectId userId) {
+        return jobsService.createJob(job, userId);
     }
 
     @GetMapping
-    public List<Jobs> getAllJobs() {
-        return jobsService.getAllJobs();
+    public List<Jobs> getAllJobs(@RequestHeader("userId") ObjectId userId) {
+        return jobsService.getAllJobsByUserId(userId);
     }
 
     @GetMapping("/{id}")
-    public Optional<Jobs> getJobById(@PathVariable ObjectId id) {
-        return jobsService.getJobById(id);
+    public Optional<Jobs> getJobById(@PathVariable ObjectId id, @RequestHeader("userId") ObjectId userId) {
+        return jobsService.getJobByIdAndUserId(id, userId);
     }
 
     @PatchMapping("/{id}")
-    public Jobs updateJob(@PathVariable ObjectId id, @RequestBody Jobs job) {
-        return jobsService.updateJob(id, job);
+    public Jobs updateJob(@PathVariable ObjectId id, @RequestBody Jobs job, @RequestHeader("userId") ObjectId userId) {
+        return jobsService.updateJob(id, job, userId);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteJob(@PathVariable ObjectId id) {
-        jobsService.deleteJob(id);
+    public void deleteJob(@PathVariable ObjectId id, @RequestHeader("userId") ObjectId userId) {
+        jobsService.deleteJob(id, userId);
     }
 
     @GetMapping("/tags")
-    public Set<String> getAllUniqueTags() {
-        return jobsService.getAllUniqueTags();
+    public Set<String> getAllUniqueTags(@RequestHeader("userId") ObjectId userId) {
+        return jobsService.getAllUniqueTagsByUserId(userId);
     }
 }

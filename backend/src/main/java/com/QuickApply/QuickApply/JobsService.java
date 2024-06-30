@@ -15,29 +15,49 @@ public class JobsService {
     @Autowired
     private JobsRepository jobsRepository;
 
-    public Jobs createJob(Jobs job) {
-        return jobsRepository.save(job);
+    @Autowired
+    private UserRepository userRepository;
+
+    public Jobs createJob(Jobs job, ObjectId userId) {
+        job.setUserId(userId);
+        Jobs savedJob = jobsRepository.save(job);
+    
+        // Add job ID to the user's job list
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.getJobIds().add(new ObjectId(savedJob.getId()));
+        userRepository.save(user);
+    
+        return savedJob;
     }
 
-    public List<Jobs> getAllJobs() {
-        return jobsRepository.findAll();
+    public List<Jobs> getAllJobsByUserId(ObjectId userId) {
+        return jobsRepository.findByUserId(userId);
     }
 
-    public Optional<Jobs> getJobById(ObjectId id) {
-        return jobsRepository.findById(id);
+    public Optional<Jobs> getJobByIdAndUserId(ObjectId id, ObjectId userId) {
+        return jobsRepository.findByIdAndUserId(id, userId);
     }
 
-    public Jobs updateJob(ObjectId id, Jobs job) {
+    public Jobs updateJob(ObjectId id, Jobs job, ObjectId userId) {
         job.setId(id);
+        job.setUserId(userId);
         return jobsRepository.save(job);
     }
 
-    public void deleteJob(ObjectId id) {
-        jobsRepository.deleteById(id);
+    public void deleteJob(ObjectId id, ObjectId userId) {
+        Optional<Jobs> job = jobsRepository.findByIdAndUserId(id, userId);
+        if (job.isPresent()) {
+            jobsRepository.deleteById(id);
+            User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            user.getJobIds().remove(id);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("Job not found or does not belong to the user");
+        }
     }
 
-    public Set<String> getAllUniqueTags() {
-        return jobsRepository.findAll()
+    public Set<String> getAllUniqueTagsByUserId(ObjectId userId) {
+        return jobsRepository.findByUserId(userId)
                 .stream()
                 .flatMap(job -> job.getTags().stream())
                 .collect(Collectors.toSet());

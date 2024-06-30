@@ -11,8 +11,8 @@ import './maingrid.css';
 
 import { AuthContext } from '../../context/AuthContext';
 
-const API_URL = 'http://localhost:8080/jobs'; // Change at production
-const API_URL_FOR_TAGS = 'http://localhost:8080/jobs/tags'; // Change at production
+const API_URL = 'http://localhost:8080/jobs';
+const API_URL_FOR_TAGS = 'http://localhost:8080/jobs/tags';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -87,7 +87,6 @@ const ListingCardGrid: React.FC = () => {
   const [tagInputValue, setTagInputValue] = useState('');
   const [isCustomTag, setIsCustomTag] = useState(false);
   const [tagColors, setTagColors] = useState<{ [key: string]: string }>({});
-
   const { register, handleSubmit, reset, setValue, getValues, watch, formState: { errors } } = useForm<Listing>({
     defaultValues: {
       title: '',
@@ -106,6 +105,7 @@ const ListingCardGrid: React.FC = () => {
   const watchedApplied = watch('applied', false);
 
   const { user } = useContext(AuthContext);
+  const id = user?.id || '';
 
   const fetchListings = async () => {
     if (user && user.accessToken) {
@@ -113,6 +113,7 @@ const ListingCardGrid: React.FC = () => {
         return {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.accessToken}`,
+          userId: id,
         };
       };
 
@@ -135,6 +136,32 @@ const ListingCardGrid: React.FC = () => {
     }
   };
 
+  const handleAddListing = async (data: Listing) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user?.accessToken}`,
+          userId: id,
+        },
+        body: JSON.stringify({ ...data, tags: selectedTags }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const newData = await response.json();
+      setListings((prevListings) => [newData, ...prevListings]);
+      setIsAdding(false);
+      reset();
+      setSelectedTags([]);
+    } catch (error) {
+      console.error('Error adding new listing:', error);
+    }
+  };
+
   useEffect(() => {
     if (user && user.accessToken) {
       fetchListings();
@@ -145,6 +172,7 @@ const ListingCardGrid: React.FC = () => {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${user.accessToken}`,
+              userId: id,
             },
           });
           const data = await response.json();
@@ -181,31 +209,6 @@ const ListingCardGrid: React.FC = () => {
     setTagColors(initialTagColors);
   }, [allTags]);
 
-  const handleAddListing = async (data: Listing) => {
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user?.accessToken}`,
-        },
-        body: JSON.stringify({ ...data, tags: selectedTags }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const newData = await response.json();
-      setListings((prevListings) => [newData, ...prevListings]);
-      setIsAdding(false);
-      reset();
-      setSelectedTags([]);
-    } catch (error) {
-      console.error('Error adding new listing:', error);
-    }
-  };
-
   const handleCancel = () => {
     setIsAdding(false);
     reset();
@@ -228,24 +231,6 @@ const ListingCardGrid: React.FC = () => {
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
-  };
-
-  const getDisplayedPages = (count: number, page: number): (number | string)[] => {
-    let pages: (number | string)[] = [];
-
-    if (count <= 5) {
-      pages = [...Array(count).keys()].map(n => n + 1);
-    } else {
-      if (page <= 3) {
-        pages = [1, 2, 3, 4, '...', count];
-      } else if (page >= count - 2) {
-        pages = [1, '...', count - 3, count - 2, count - 1, count];
-      } else {
-        pages = [1, '...', page - 1, page, page + 1, '...', count];
-      }
-    }
-
-    return pages;
   };
 
   const handleApply = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,6 +271,25 @@ const ListingCardGrid: React.FC = () => {
   const getTagColor = (tag: string) => {
     return tagColors[tag] || generateRandomColor();
   };
+
+  const getDisplayedPages = (count: number, page: number): (number | string)[] => {
+    let pages: (number | string)[] = [];
+
+    if (count <= 5) {
+      pages = [...Array(count).keys()].map(n => n + 1);
+    } else {
+      if (page <= 3) {
+        pages = [1, 2, 3, 4, '...', count];
+      } else if (page >= count - 2) {
+        pages = [1, '...', count - 3, count - 2, count - 1, count];
+      } else {
+        pages = [1, '...', page - 1, page, page + 1, '...', count];
+      }
+    }
+
+    return pages;
+  };
+
 
   return (
     <div className="Job-Container flex flex-col h-full overflow-y-scroll">
