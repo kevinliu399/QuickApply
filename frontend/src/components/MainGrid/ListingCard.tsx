@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { Checkbox } from '@mui/material';
-import { Check, Trash2, Pen, ArrowDownNarrowWide } from 'lucide-react';
+import { Trash2, Pen, ArrowDownNarrowWide } from 'lucide-react';
 import { styled } from '@mui/system';
 import ProgressBar from './ProgressBar';
 import './maingrid.css';
-
-const id = 'your-id'; // Replace 'your-id' with the actual value of id
-const API_URL = `https://localhost:8080/jobs/${id}`;
+import { AuthContext } from '../../context/AuthContext';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -14,6 +12,8 @@ const CustomCheckbox = styled(Checkbox)({
     color: '#48b574',
   },
 });
+
+const API_URL = 'http://localhost:8080/jobs';
 
 interface ListingCardProps {
   id: string;
@@ -33,6 +33,35 @@ const ListingCard: React.FC<ListingCardProps> = ({ id, title, company, descripti
   const [isApplied, setIsApplied] = useState(applied || false);
   const [showDetailCard, setShowDetailCard] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const { user } = useContext(AuthContext);
+
+  const deleteListing = async () => {
+    if (user && user.accessToken) {
+      const getHeaders = () => {
+        return {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.accessToken}`,
+          userId: user.id,
+        };
+      };
+
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: 'DELETE',
+          headers: getHeaders(),
+        });
+
+        if (response.ok) {
+          console.log('Listing deleted successfully');
+        } else {
+          throw new Error('Network response was not ok');
+        }
+      } catch (error) {
+        console.error('Error deleting listings:', error);
+      }
+    }
+  };
 
   const toggleDetailCard = () => {
     setShowDetailCard(!showDetailCard);
@@ -75,7 +104,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ id, title, company, descripti
           <button className="flex items-center justify-center bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg">
             <Pen size={20} />
           </button>
-          <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-lg">
+          <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-lg" onClick={deleteListing}>
             <Trash2 size={20} />
           </button>
           <button className="flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full p-2 shadow-lg" onClick={toggleDetailCard}>
