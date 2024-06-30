@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CircleX } from 'lucide-react';
 import { TextField as MuiTextField } from '@mui/material';
 import { styled } from '@mui/material/styles'; 
+import authService from '../services/authService'; // Import the authentication service
 import './modal.css';
+import { useAuth } from '../context/AuthContext';
 
 type LoginModalProps = {
     onClick?: () => void;
     onSignUpClick?: () => void;
     isOpen?: boolean;
+    onLoginSuccess?: () => void; // Add this prop
 };
 
 type CustomTextFieldProps = {
@@ -59,7 +62,34 @@ const CustomTextField = styled(
   },
 }));
 
-const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick, onLoginSuccess }) => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const { setUser }  = useAuth();
+
+    const handleLogin = async () => {
+      try {
+          const response = await authService.login(username, password);
+          
+          // Update the AuthContext with the logged-in user
+          setUser(response.user);
+
+          console.log(response);
+          // Notify the parent component about the successful login
+          if (onLoginSuccess) onLoginSuccess();
+          // Redirect or close modal after successful login
+          if (onClick) onClick();
+
+          window.location.reload();
+      } catch (err) {
+          setError('Invalid username or password');
+      }
+
+      setPassword("");
+      setUsername("");
+  };
+
     if (!isOpen) return null;
 
     return (
@@ -72,22 +102,26 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick 
                     </div>
                     <div className="flex flex-col space-y-4">
                         <CustomTextField  
-                            onChange={(e) => {}} 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)} 
                             label="Username"
                             variant="outlined"
                             className="mb-2 p-2"
                             borderColor="black"
                         />
                         <CustomTextField 
-                            onChange={(e) => {}} 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)} 
                             label="Password"
+                            type="password"
                             variant="outlined"
                             className="mb-2 p-2" 
                             borderColor="black"
                         />
                     </div>
+                    {error && <p className="text-red-500">{error}</p>}
                     <div className="flex justify-center py-2 items-center w-full">
-                        <button onClick={onClick} className="text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign In</button>
+                        <button onClick={handleLogin} className="text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign In</button>
                     </div>
                     <p className="mt-4">Don't have an account? <a className="text-gray-800 hover:text-main-green hover:duration-200 hover:underline cursor-pointer" onClick={onSignUpClick}>Register</a></p>    
                 </div>

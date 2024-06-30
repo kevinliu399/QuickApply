@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
-import { Box, CssBaseline, Drawer, Typography } from '@mui/material';
+import React, { useState, useContext } from 'react';
+import { Box, CssBaseline, Drawer, Typography, Button } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
-import ListingCard from '../MainGrid/ListingCard';
+// import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
-import NewListingForm from '../MainGrid/NewListingForm';
+// import NewListingForm from '../MainGrid/NewListingForm';
+import { AuthContext } from '../../context/AuthContext';
+import authService from '../../services/authService';
+import ListingCardGrid from '../MainGrid/ListingCardGrid';
 
-const drawerWidth = 22; 
-
+const drawerWidth = 22;
 
 const LayoutComponent: React.FC = () => {
+  const { user, setUser } = useContext(AuthContext);
+
   const [isloginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
@@ -29,16 +33,20 @@ const LayoutComponent: React.FC = () => {
   const handleRegisterOpen = () => {
     setLoginModalOpen(false);
     setRegisterModalOpen(true);
-};
+  };
 
-const handleRegisterClose = () => {
+  const logoutClick = () => {
+    authService.logout();
+    setUser(null); // Clear the user context on logout
+  };
+
+  const handleRegisterClose = () => {
     setRegisterModalOpen(false);
-};
+  };
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      
-    {/* side bar */}
+      {/* side bar */}
       <Drawer
         sx={{
           width: `${drawerWidth}%`,
@@ -55,33 +63,44 @@ const handleRegisterClose = () => {
         <Sidebar />
       </Drawer>
 
-    {/* Main part of the project */}
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030'}}
+        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030', position: 'relative' }}
       >
-        <LoginButton 
-          label="Login"
-          onClick={handleLoginOpen}
-        />
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          {!user ? (
+            <LoginButton
+              label="Login"
+              onClick={handleLoginOpen}
+            />
+          ) : (
+            <Button onClick={logoutClick}>
+              Logout {user?.username}
+            </Button>
+          )}
+        </Box>
+
         <Titlebar />
-        <HeaderTable />
-        <NewListingForm />
+        {user && <HeaderTable />}
+        {!user && 
+        <Box sx={{ml: 50, mt: 50}}>
+          PLEASE LOG IN TO ADD JOB LISTINGS
+        </Box>
+        }
+        {user && <ListingCardGrid />}
+        {/* <NewListingForm /> */}
       </Box>
 
-
-        <LoginModal
-              isOpen={isloginModalOpen}
-              onClick={handleLoginClose}
-              onSignUpClick={handleRegisterOpen}
-          />
-        <RegisterModal
-            isOpen={isRegisterModalOpen}
-            onClick={handleRegisterClose}
-            onSignInClick={handleLoginOpen}
-        />
-
-    
+      <LoginModal
+        isOpen={isloginModalOpen}
+        onClick={handleLoginClose}
+        onSignUpClick={handleRegisterOpen}
+      />
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClick={handleRegisterClose}
+        onSignInClick={handleLoginOpen}
+      />
     </Box>
   );
 };
