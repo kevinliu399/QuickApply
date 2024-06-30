@@ -30,7 +30,7 @@ public class JobsController {
         return jobsService.getJobByIdAndUserId(id, userId);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public Jobs updateJob(@PathVariable ObjectId id, @RequestBody Jobs job, @RequestHeader("userId") ObjectId userId) {
         return jobsService.updateJob(id, job, userId);
     }
