@@ -42,6 +42,7 @@ public class JobsController {
 
     @GetMapping("/tags")
     public Set<String> getAllUniqueTags(@RequestHeader("userId") ObjectId userId) {
+        System.out.println("Fetching all unique tags for user: " + userId);
         return jobsService.getAllUniqueTagsByUserId(userId);
     }
 }

@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import { Checkbox } from '@mui/material';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { Checkbox, Select, MenuItem } from '@mui/material';
 import { Trash2, Pen, ArrowDownNarrowWide } from 'lucide-react';
 import { styled } from '@mui/system';
 import ProgressBar from './ProgressBar';
 import './maingrid.css';
 import { AuthContext } from '../../context/AuthContext';
+import { useTags } from '../../context/TagContext';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -26,8 +27,6 @@ const statusColor = (status: string) => {
   }
 };
 
-const API_URL = 'http://localhost:8080/jobs';
-
 interface ListingCardProps {
   id: string;
   title?: string;
@@ -39,7 +38,6 @@ interface ListingCardProps {
   offerDate?: string;
   tags?: string[];
   applied?: boolean;
-  tagColors: { [key: string]: string };
 }
 
 const ListingCard: React.FC<ListingCardProps> = ({
@@ -53,7 +51,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   offerDate,
   tags,
   applied,
-  tagColors
 }) => {
   const [isApplied, setIsApplied] = useState(applied || false);
   const [isEditing, setIsEditing] = useState(false);
@@ -69,9 +66,15 @@ const ListingCard: React.FC<ListingCardProps> = ({
     tags: tags || [],
     applied: applied || false,
   });
+  const [selectedTags, setSelectedTags] = useState<string[]>(tags || []);
+  const [tagInputValue, setTagInputValue] = useState('');
+  const [isCustomTag, setIsCustomTag] = useState(false);
+
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { user } = useContext(AuthContext);
+  const { allTags, tagColors, addTag } = useTags();
+
 
   const deleteListing = async () => {
     if (user && user.accessToken) {
@@ -79,12 +82,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
         return {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.accessToken}`,
-          userId: user.id,
+          userId: user?.id,
         };
       };
 
       try {
-        const response = await fetch(`${API_URL}/${id}`, {
+        const response = await fetch(`http://localhost:8080/jobs/${id}`, {
           method: 'DELETE',
           headers: getHeaders(),
         });
@@ -113,7 +116,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       tags: tags || [],
       applied: applied || false,
     });
-    console.log('Editing:', isEditing);
+    setSelectedTags(tags || []);
   };
 
   const toggleDetailCard = () => {
@@ -126,7 +129,16 @@ const ListingCard: React.FC<ListingCardProps> = ({
   };
 
   const handleStatusChange = () => {
-    const newStatus = formData.status === 'Applied' ? 'Interview' : formData.status === 'Interview' ? 'Decision' : 'Applied';
+    const newStatus =
+      formData.status === 'Applied'
+        ? 'Interview'
+        : formData.status === 'Interview'
+        ? 'Decision'
+        : formData.status === 'Decision'
+        ? 'Watching'
+        : formData.status === 'Watching'
+        ? 'Applied'
+        : ''; 
     setFormData({ ...formData, status: newStatus });
   };
 
@@ -134,35 +146,77 @@ const ListingCard: React.FC<ListingCardProps> = ({
     setFormData({ ...formData, applied: !formData.applied });
   };
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (user && user.accessToken) {
-      const getHeaders = () => {
-        return {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user.accessToken}`,
-          userId: user.id,
-        };
-      };
+  const handleTagInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInputValue(event.target.value);
+  };
 
-      try {
-        const response = await fetch(`${API_URL}/${id}`, {
-          method: 'PUT',
-          headers: getHeaders(),
-          body: JSON.stringify(formData),
-        });
+  const handleTagKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && tagInputValue.trim() !== '') {
+      event.preventDefault();
+      if (!selectedTags.includes(tagInputValue.trim())) {
+        setSelectedTags([...selectedTags, tagInputValue.trim()]);
+        addTag(tagInputValue.trim());
+      }
+      setTagInputValue('');
+      setIsCustomTag(false);
+    }
+  };
 
-        if (response.ok) {
-          console.log('Listing updated successfully');
-          setIsEditing(false);
-        } else {
-          throw new Error('Network response was not ok');
-        }
-      } catch (error) {
-        console.error('Error updating listing:', error);
+  const handleRemoveTag = (tagToRemove: string) => {
+    setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleTagChange = (event: any) => {
+    const value = event.target.value;
+    if (value === '+ Custom Tag') {
+      setIsCustomTag(true);
+    } else {
+      setIsCustomTag(false);
+      if (!selectedTags.includes(value)) {
+        setSelectedTags([...selectedTags, value]);
       }
     }
   };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (user && user.accessToken) {
+        const getHeaders = () => {
+            return {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.accessToken}`,
+                userId: user.id,
+            };
+        };
+
+        try {
+            console.log('Updating listing with ID:', id);
+            const response = await fetch(`http://localhost:8080/jobs/${id}`, {
+                method: 'PUT',
+                headers: getHeaders(),
+                body: JSON.stringify({ ...formData, tags: selectedTags }),
+            });
+
+            if (response.ok) {
+                console.log('Listing updated successfully');
+                setIsEditing(false);
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+            console.error('Error updating listing:', error);
+        }
+    }
+};
+
+useEffect(() => {
+    console.log('ListingCard mounted');
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        console.log('ListingCard unmounted');
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+}, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
@@ -170,47 +224,52 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   return (
     <div className="relative mx-10 mt-8" ref={cardRef}>
       <div className="flex items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full">
         <div className="flex items-center justify-center flex-1">
           {isEditing ? (
-            <input
-              className="bg-main-gray focus:outline-none focus:border-none ml-2 text-xl font-medium"
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-            />
+            <div className="items-center border-b-2 border-black ml-6">
+              <input
+                className="bg-main-gray focus:outline-none focus:border-none ml-2 text-xl font-medium"
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+              />
+            </div>
           ) : (
             <p className="text-xl font-medium ml-6">{title}</p>
           )}
         </div>
         <div className="flex items-center justify-center flex-1">
           {isEditing ? (
-            <input
-              className="bg-main-gray focus:outline-none focus:border-none ml-2 text-xl font-medium"
-              type="text"
-              name="company"
-              value={formData.company}
-              onChange={handleInputChange}
-            />
+            <div className="items-center border-b-2 border-black ml-4">
+              <input
+                className="bg-main-gray focus:outline-none focus:border-none ml-2 text-xl font-medium"
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+              />
+            </div>
           ) : (
             <p className="text-xl font-medium ml-4">{company}</p>
           )}
         </div>
         <div className="flex items-center justify-center flex-1 ml-2">
           {isEditing ? (
-            <button type="button" onClick={handleStatusChange} className={`rounded-full w-8 h-8 ${statusColor(formData.status)}`}></button>
+            <button
+              type="button"
+              onClick={handleStatusChange}
+              className={`rounded-full w-8 h-8 ${statusColor(formData.status)}`}
+            ></button>
           ) : (
-            <div className={`flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl ${statusColor(status as string)}`}></div>
+            <div
+              className={`flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl ${statusColor(
+                status as string
+              )}`}
+            ></div>
           )}
         </div>
         <div className="flex items-center justify-center flex-1 mr-4">
@@ -231,18 +290,27 @@ const ListingCard: React.FC<ListingCardProps> = ({
           )}
         </div>
         <div className="absolute right-3 flex items-center space-x-1">
-          <button className="flex items-center justify-center bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg" onClick={toggleEditForm}>
+          <button
+            className="flex items-center justify-center bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg"
+            onClick={toggleEditForm}
+          >
             <Pen size={20} />
           </button>
-          <button className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-lg" onClick={deleteListing}>
+          <button
+            className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-lg"
+            onClick={deleteListing}
+          >
             <Trash2 size={20} />
           </button>
-          <button className="flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full p-2 shadow-lg" onClick={toggleDetailCard}>
+          <button
+            className="flex items-center justify-center bg-gray-600 hover:bg-gray-500 rounded-full p-2 shadow-lg"
+            onClick={toggleDetailCard}
+          >
             <ArrowDownNarrowWide size={20} />
           </button>
         </div>
       </div>
-      <div className={`detail-card ${showDetailCard ? 'show' : ''}`}>
+      <div className={`detail-card ${showDetailCard ? 'show' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-center w-full">
           <div className="bg-main-gray bg-opacity-95 rounded-b-2xl shadow-2xl w-[98%] p-4">
             {isEditing ? (
@@ -295,11 +363,48 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   <div>
                     <h1 className="text-lg font-medium">Tags:</h1>
                     <div className="tag-input-container">
-                      {/* Add tag input handling here */}
+                      {isCustomTag ? (
+                        <input
+                          value={tagInputValue}
+                          onChange={handleTagInputChange}
+                          onKeyPress={handleTagKeyPress}
+                          placeholder="Enter new tag"
+                          className="rounded-md bg-white shadow-md p-2 focus:border-none focus:outline focus:outline-main-green"
+                        />
+                      ) : (
+                        <Select value="" onChange={handleTagChange} displayEmpty>
+                          <MenuItem value="" disabled>
+                            Add a tag
+                          </MenuItem>
+                          <MenuItem value="+ Custom Tag">+ Custom Tag</MenuItem>
+                          {allTags.map((tag, index) => (
+                            <MenuItem key={index} value={tag}>
+                              {tag}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      )}
+                      <div className="w-full">
+                        <div className="tag-list flex flex-wrap space-x-2 w-full">
+                          {selectedTags.map((tag, index) => (
+                            <div
+                              key={index}
+                              className="tag-item text-main-black rounded-full px-3 py-1 text-sm mt-2"
+                              style={{ backgroundColor: tagColors[tag] }}
+                            >
+                              <button className="hover:line-through" onClick={() => handleRemoveTag(tag)}>
+                                {tag}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <button type="submit" className="mt-4 bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg">Save</button>
+                <button type="submit" className="mt-4 bg-main-green hover:bg-green-200 rounded-full p-2 shadow-lg font-semibold" >
+                  Save
+                </button>
               </form>
             ) : (
               <div className="grid grid-cols-4 h-full">

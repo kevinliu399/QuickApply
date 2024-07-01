@@ -8,11 +8,10 @@ import { Trash2 } from 'lucide-react';
 import ListingCard from './ListingCard';
 import ProgressBar from './ProgressBar';
 import './maingrid.css';
-
 import { AuthContext } from '../../context/AuthContext';
+import { useTags } from '../../context/TagContext';
 
 const API_URL = 'http://localhost:8080/jobs';
-const API_URL_FOR_TAGS = 'http://localhost:8080/jobs/tags';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },
@@ -20,6 +19,19 @@ const CustomCheckbox = styled(Checkbox)({
     color: '#48b574',
   },
 });
+
+const statusColor = (status: string) => {
+  switch (status) {
+    case 'Decision':
+      return 'bg-red-300';
+    case 'Interview':
+      return 'bg-yellow-200';
+    case 'Applied':
+      return 'bg-green-300';
+    default:
+      return 'bg-neutral-500';
+  }
+};
 
 interface Listing {
   id: string;
@@ -54,39 +66,15 @@ const CustomPagination = styled(Pagination)({
   },
 });
 
-const statusColor = (status: string) => {
-  switch (status) {
-    case 'Decision':
-      return 'bg-red-300';
-    case 'Interview':
-      return 'bg-yellow-200';
-    case 'Applied':
-      return 'bg-green-300';
-    default:
-      return 'bg-neutral-500';
-  }
-};
-
-const generateRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
 const ListingCardGrid: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [listingsPerPage, setListingsPerPage] = useState(10);
   const [isAdding, setIsAdding] = useState(false);
-  const [allTags, setAllTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [tagInputValue, setTagInputValue] = useState('');
   const [isCustomTag, setIsCustomTag] = useState(false);
-  const [tagColors, setTagColors] = useState<{ [key: string]: string }>({});
   const { register, handleSubmit, reset, setValue, getValues, watch, formState: { errors } } = useForm<Listing>({
     defaultValues: {
       title: '',
@@ -105,15 +93,17 @@ const ListingCardGrid: React.FC = () => {
   const watchedApplied = watch('applied', false);
 
   const { user } = useContext(AuthContext);
-  const id = user?.id || '';
+  const { allTags, tagColors, addTag } = useTags();
 
   const fetchListings = async () => {
+
+
     if (user && user.accessToken) {
       const getHeaders = () => {
         return {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.accessToken}`,
-          userId: id,
+          userId: user?.id,
         };
       };
 
@@ -143,7 +133,7 @@ const ListingCardGrid: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user?.accessToken}`,
-          userId: id,
+          userId: user?.id || '',
         },
         body: JSON.stringify({ ...data, tags: selectedTags }),
       });
@@ -165,25 +155,6 @@ const ListingCardGrid: React.FC = () => {
   useEffect(() => {
     if (user && user.accessToken) {
       fetchListings();
-
-      const fetchTags = async () => {
-        try {
-          const response = await fetch(API_URL_FOR_TAGS, {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${user.accessToken}`,
-              userId: id,
-            },
-          });
-          const data = await response.json();
-          setAllTags(Array.isArray(data) ? data : []);
-        } catch (error) {
-          console.error('Error fetching tags:', error);
-          setAllTags([]);
-        }
-      };
-
-      fetchTags();
     }
   }, [user]);
 
@@ -200,14 +171,6 @@ const ListingCardGrid: React.FC = () => {
 
     return () => window.removeEventListener('resize', updateListingsPerPage);
   }, []);
-
-  useEffect(() => {
-    const initialTagColors = allTags.reduce((acc, tag) => {
-      acc[tag] = generateRandomColor();
-      return acc;
-    }, {} as { [key: string]: string });
-    setTagColors(initialTagColors);
-  }, [allTags]);
 
   const handleCancel = () => {
     setIsAdding(false);
@@ -246,6 +209,7 @@ const ListingCardGrid: React.FC = () => {
       event.preventDefault();
       if (!selectedTags.includes(tagInputValue.trim())) {
         setSelectedTags([...selectedTags, tagInputValue.trim()]);
+        addTag(tagInputValue.trim());
       }
       setTagInputValue('');
       setIsCustomTag(false);
@@ -253,7 +217,7 @@ const ListingCardGrid: React.FC = () => {
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setSelectedTags(selectedTags.filter(tag => tag !== tagToRemove));
+    setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
   };
 
   const handleTagChange = (event: SelectChangeEvent<string>) => {
@@ -268,15 +232,11 @@ const ListingCardGrid: React.FC = () => {
     }
   };
 
-  const getTagColor = (tag: string) => {
-    return tagColors[tag] || generateRandomColor();
-  };
-
   const getDisplayedPages = (count: number, page: number): (number | string)[] => {
     let pages: (number | string)[] = [];
 
     if (count <= 5) {
-      pages = [...Array(count).keys()].map(n => n + 1);
+      pages = [...Array(count).keys()].map((n) => n + 1);
     } else {
       if (page <= 3) {
         pages = [1, 2, 3, 4, '...', count];
@@ -289,7 +249,6 @@ const ListingCardGrid: React.FC = () => {
 
     return pages;
   };
-
 
   return (
     <div className="Job-Container flex flex-col h-full overflow-y-scroll">
@@ -304,17 +263,31 @@ const ListingCardGrid: React.FC = () => {
                   <div className="flex flex-row items-center justify-between bg-main-gray px-4 py-6 rounded-2xl shadow-2xl w-full">
                     <div className="flex items-center justify-center flex-1">
                       <div className="text-xl ml-6 border-b-2 border-b-black focus:border-b-main-green">
-                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type="text" placeholder="Software Developer" {...register('title')} />
+                        <input
+                          className="bg-main-gray focus:outline-none focus:border-none ml-2"
+                          type="text"
+                          placeholder="Software Developer"
+                          {...register('title')}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center justify-center flex-1">
                       <div className="text-xl ml-6 border-b-2 border-b-black">
-                        <input className="bg-main-gray focus:outline-none focus:border-none ml-2" type="text" placeholder="Google" {...register('company')} />
+                        <input
+                          className="bg-main-gray focus:outline-none focus:border-none ml-2"
+                          type="text"
+                          placeholder="Google"
+                          {...register('company')}
+                        />
                       </div>
                     </div>
                     <div className="flex items-center justify-center flex-1 ml-2">
                       <div className="flex items-center justify-center rounded-full w-8 h-8 ml-1 shadow-xl">
-                        <button type="button" onClick={handleStatusClick} className={`rounded-full w-8 h-8 ${statusColor(watchedStatus as string)}`}></button>
+                        <button
+                          type="button"
+                          onClick={handleStatusClick}
+                          className={`rounded-full w-8 h-8 ${statusColor(watchedStatus as string)}`}
+                        ></button>
                       </div>
                     </div>
                     <div className="flex items-center justify-center flex-1 mr-4">
@@ -326,7 +299,11 @@ const ListingCardGrid: React.FC = () => {
                       />
                     </div>
                     <div className="absolute right-3 flex items-center">
-                      <button type="button" className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-2xl" onClick={handleCancel}>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center bg-red-400 hover:bg-red-300 rounded-full p-2 shadow-2xl"
+                        onClick={handleCancel}
+                      >
                         <Trash2 size={20} />
                       </button>
                     </div>
@@ -371,11 +348,7 @@ const ListingCardGrid: React.FC = () => {
                                   className="rounded-md bg-white shadow-md p-2 focus:border-none focus:outline focus:outline-main-green"
                                 />
                               ) : (
-                                <Select
-                                  value=""
-                                  onChange={handleTagChange}
-                                  displayEmpty
-                                >
+                                <Select value="" onChange={handleTagChange} displayEmpty>
                                   <MenuItem value="" disabled>
                                     Add a tag
                                   </MenuItem>
@@ -388,10 +361,16 @@ const ListingCardGrid: React.FC = () => {
                                 </Select>
                               )}
                               <div className="w-full">
-                                <div className="tag-list flex flex-wrap space-x-2 w-full ">
+                                <div className="tag-list flex flex-wrap space-x-2 w-full">
                                   {selectedTags.map((tag, index) => (
-                                    <div key={index} className="tag-item text-main-black rounded-full px-3 py-1 text-sm mt-2" style={{ backgroundColor: getTagColor(tag) }}>
-                                      <button className="hover:line-through" onClick={() => handleRemoveTag(tag)}>{tag}</button>
+                                    <div
+                                      key={index}
+                                      className="tag-item text-main-black rounded-full px-3 py-1 text-sm mt-2"
+                                      style={{ backgroundColor: tagColors[tag] }}
+                                    >
+                                      <button className="hover:line-through" onClick={() => handleRemoveTag(tag)}>
+                                        {tag}
+                                      </button>
                                     </div>
                                   ))}
                                 </div>
@@ -419,7 +398,6 @@ const ListingCardGrid: React.FC = () => {
               interviewDate={listing.interviewDate}
               offerDate={listing.offerDate}
               tags={listing.tags}
-              tagColors={tagColors}
             />
           ))}
         </div>
@@ -435,7 +413,9 @@ const ListingCardGrid: React.FC = () => {
               style={{
                 display:
                   item.type === 'page'
-                    ? getDisplayedPages(Math.ceil(listings.length / listingsPerPage), currentPage).includes(item.page as number | string)
+                    ? getDisplayedPages(Math.ceil(listings.length / listingsPerPage), currentPage).includes(
+                        item.page as number | string
+                      )
                       ? 'flex'
                       : 'none'
                     : 'flex',
