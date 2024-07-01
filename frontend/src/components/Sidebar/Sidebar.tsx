@@ -74,14 +74,14 @@ const Sidebar: React.FC = () => {
 
   const { user } = useContext(AuthContext);
 
-  
+  const id = user?.id;
 
   const handleEditClick = () => {
     if (isEditing) {
       const commonLinks = texts.map((item) => item.text);
 
 
-      fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
+      fetch(`http://localhost:8080/users/${id}/commonLinks`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ const Sidebar: React.FC = () => {
     if (user && user.accessToken) {
       console.log(user)
 
-      fetch(`http://localhost:8080/users/6674b6057f39131c25ad000d/commonLinks`, {
+      fetch(`http://localhost:8080/users/${id}/commonLinks`, {
         headers: getHeaders()
       })
       .then(response => response.json())

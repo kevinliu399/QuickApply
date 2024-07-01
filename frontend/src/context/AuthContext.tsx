@@ -19,10 +19,12 @@ interface User {
   accessToken?: string;
 }
 
+
 interface AuthContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
+
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -49,3 +51,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

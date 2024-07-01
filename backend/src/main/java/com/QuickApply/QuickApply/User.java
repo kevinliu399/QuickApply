@@ -24,7 +24,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     private ObjectId id;
 
@@ -33,28 +33,25 @@ public class User implements UserDetails{
     private String password;
     private String email;
     private List<String> commonLinks;
-    private List<Jobs> jobIds;
-    
-   
+    private List<ObjectId> jobIds;
 
     public String getId() {
         return id != null ? id.toHexString() : null;
     }
 
+    // public User(ObjectId userId, String username, String password, String email,
+    // List<String> commonLinks) {
+    // super();
+    // this.id = userId;
+    // this.username = username;
+    // this.password = password;
+    // this.email = email;
+    // this.commonLinks = commonLinks;
+    // this.jobIds = jobIds;
 
-    // public User(ObjectId userId, String username, String password, String email, List<String> commonLinks) {
-	// 	super();
-	// 	this.id = userId;
-	// 	this.username = username;
-	// 	this.password = password;
-    //     this.email = email;
-    //     this.commonLinks = commonLinks;
-    //     this.jobIds = jobIds;
-        
-    //     // this.authorities = new HashSet<>();
-       
-		
-	// }
+    // // this.authorities = new HashSet<>();
+
+    // }
 
     public ObjectId getUserId() {
         return this.id;
@@ -63,8 +60,6 @@ public class User implements UserDetails{
     public void setUserId(ObjectId userId) {
         this.id = userId;
     }
-
-
 
     @Override
     public java.util.Collection<? extends GrantedAuthority> getAuthorities() {
@@ -81,25 +76,19 @@ public class User implements UserDetails{
         return this.username;
     }
 
-   
     public String getEmail() {
         return this.email;
     }
 
-   
     public List<String> getCommonLinks() {
         return this.commonLinks;
     }
 
-   
-    public List<Jobs> getJobIds() {
+    public List<ObjectId> getJobIds() {
         return this.jobIds;
     }
 
-    
-    
-
     public void setCommonLinks(List<String> commonLinks) {
         this.commonLinks = commonLinks;
-    } 
+    }
 }

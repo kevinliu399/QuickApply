@@ -71,15 +71,9 @@ public class AuthenticationService {
 
         List<String> commonLinks = new ArrayList<String>();
 
-        List<Jobs> jobIds = new ArrayList<Jobs>();
+        List<ObjectId> jobIds = new ArrayList<ObjectId>();
 
         return userRepository.save(new User(id, username, encodedPassword, email, commonLinks, jobIds ));
-
-      
-        
-       
-
-    
     }
 
 
