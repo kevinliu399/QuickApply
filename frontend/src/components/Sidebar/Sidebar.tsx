@@ -81,7 +81,7 @@ const Sidebar: React.FC = () => {
       const commonLinks = texts.map((item) => item.text);
 
 
-      fetch(`http://localhost:8080/users/${id}/commonLinks`, {
+      fetch(`http://3.89.243.29:8080/users/${id}/commonLinks`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ const Sidebar: React.FC = () => {
     if (user && user.accessToken) {
       console.log(user)
 
-      fetch(`http://localhost:8080/users/${id}/commonLinks`, {
+      fetch(`http://3.89.243.29:8080/users/${id}/commonLinks`, {
         headers: getHeaders()
       })
       .then(response => response.json())

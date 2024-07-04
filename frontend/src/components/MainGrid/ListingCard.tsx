@@ -87,7 +87,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
       };
 
       try {
-        const response = await fetch(`http://localhost:8080/jobs/${id}`, {
+        const response = await fetch(`http://3.89.243.29:8080/jobs/${id}`, {
           method: 'DELETE',
           headers: getHeaders(),
         });
@@ -191,7 +191,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
 
         try {
             console.log('Updating listing with ID:', id);
-            const response = await fetch(`http://localhost:8080/jobs/${id}`, {
+            const response = await fetch(`http://3.89.243.29:8080/jobs/${id}`, {
                 method: 'PUT',
                 headers: getHeaders(),
                 body: JSON.stringify({ ...formData, tags: selectedTags }),
