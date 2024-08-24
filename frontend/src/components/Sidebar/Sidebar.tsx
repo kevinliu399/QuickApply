@@ -37,7 +37,7 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
 // TextWithIcon component
 const TextWithIcon: React.FC<{ text: string, icon: React.ReactNode, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, icon, isEditing, onChange, onCopy, onClear }) => (
   <div className="flex items-center my-2 w-4/5 p-3 rounded-md" >
-    <div className="mr-7 text-3xl">{icon}</div>
+    <div className="mr-7 text-3xl icon-hover">{icon}</div>
     <TextWithCopyIcon text={text} isEditing={isEditing} onChange={onChange} onCopy={onCopy} onClear={onClear} />
   </div>
 );
@@ -191,26 +191,3 @@ const Sidebar: React.FC = () => {
 
 export default Sidebar;
 
-  /*
-  return (
-    <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
-      <label className="hamburger-menu">
-        <input type="checkbox"/>
-      </label>
-      <div className="sidebar w-full">
-        <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
-          QuickApply
-        </h1>
-        <SidebarContent
-          texts={texts} 
-          isEditing={isEditing} 
-          handleTextChange={handleTextChange} 
-          handleCopyClick={handleCopyClick} 
-          handleEditClick={handleEditClick} 
-          handleClearClick={handleClearClick} 
-        />
-      </div>
-    </div>
-  );
-};
-*/
