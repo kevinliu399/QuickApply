@@ -11,10 +11,13 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
         type="text" 
         value={text} 
         onChange={onChange} 
-        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm"
+        placeholder={text}
+        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm placeholder-[rgba(169,169,169,0.4)]"
       />
     ) : (
-      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">{text}</span>
+      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">
+        {text}
+      </span>
     )}
     {isEditing ? (
       <X 
@@ -66,10 +69,10 @@ const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[
 const Sidebar: React.FC = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [texts, setTexts] = useState<{ text: string, icon: React.ReactNode }[]>([
-    { text: 'Text 1', icon: <Mail className="text-[#67ffa4]" /> },
-    { text: 'Text 2', icon: <Linkedin className="text-[#67ffa4]" /> },
-    { text: 'Text 3', icon: <Globe className="text-[#67ffa4]" /> },
-    { text: 'Text 4', icon: <Github className="text-[#67ffa4]" /> },
+    { text: 'Email', icon: <Mail className="text-[#67ffa4]" /> },
+    { text: 'Linkedin', icon: <Linkedin className="text-[#67ffa4]" /> },
+    { text: 'Website', icon: <Globe className="text-[#67ffa4]" /> },
+    { text: 'Github', icon: <Github className="text-[#67ffa4]" /> },
   ]);
 
   const { user } = useContext(AuthContext);
@@ -135,10 +138,10 @@ const Sidebar: React.FC = () => {
         Authorization: `Bearer ${user?.accessToken}`,
       };
     };
-
+  
     if (user && user.accessToken) {
       console.log(user)
-
+  
       fetch(`http://localhost:8080/users/${id}/commonLinks`, {
         headers: getHeaders()
       })
@@ -146,7 +149,7 @@ const Sidebar: React.FC = () => {
       .then(data => {
         const updatedTexts = texts.map((item, index) => ({
           ...item,
-          text: data[index] || '' // Assign fetched commonLinks values to text fields
+          text: data[index] || item.text // Use fetched data if available, otherwise keep the placeholder
         }));
         setTexts(updatedTexts);
       })
