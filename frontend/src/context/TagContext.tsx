@@ -43,7 +43,8 @@ export const TagProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
         try {
             console.log('Fetching tags...');
-            const response = await fetch('http://3.89.243.29:8080/jobs/tags', {
+            // const response = await fetch('http://3.89.243.29:8080/jobs/tags', {
+            const response = await fetch('http://localhost:8080/jobs/tags', {
                 headers: getHeaders(),
             });
             if (!response.ok) {
