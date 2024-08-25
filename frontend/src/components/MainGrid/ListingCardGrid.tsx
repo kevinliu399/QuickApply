@@ -11,7 +11,8 @@ import './maingrid.css';
 import { AuthContext } from '../../context/AuthContext';
 import { useTags } from '../../context/TagContext';
 
-const API_URL = 'http://3.89.243.29:8080/jobs';
+// const API_URL = 'http://3.89.243.29:8080/jobs';
+const API_URL = 'http://localhost:8080/jobs';
 
 const CustomCheckbox = styled(Checkbox)({
   '& .MuiSvgIcon-root': { fontSize: 28 },

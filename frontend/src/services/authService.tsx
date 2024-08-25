@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://3.89.243.29:8080/auth/'; 
+// const API_URL = 'http://3.89.243.29:8080/auth/'; 
+const API_URL = 'http://localhost:8080/auth/'; 
 
 interface User {
   id: string;
