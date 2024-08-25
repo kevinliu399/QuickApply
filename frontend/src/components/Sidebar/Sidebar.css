@@ -94,3 +94,11 @@
 .hamburger-menu:has(input:checked) + .sidebar {
   translate: 0;
 }
+
+.icon-hover {
+  transition: transform 0.2s ease-in-out;
+}
+
+.icon-hover:hover {
+  transform: scale(0.9);
+}

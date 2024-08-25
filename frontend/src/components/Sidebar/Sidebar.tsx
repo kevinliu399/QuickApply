@@ -11,10 +11,13 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
         type="text" 
         value={text} 
         onChange={onChange} 
-        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm"
+        placeholder={text}
+        className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm placeholder-[rgba(169,169,169,0.4)]"
       />
     ) : (
-      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">{text}</span>
+      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">
+        {text}
+      </span>
     )}
     {isEditing ? (
       <X 
@@ -37,7 +40,7 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
 // TextWithIcon component
 const TextWithIcon: React.FC<{ text: string, icon: React.ReactNode, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, icon, isEditing, onChange, onCopy, onClear }) => (
   <div className="flex items-center my-2 w-4/5 p-3 rounded-md" >
-    <div className="mr-7 text-3xl">{icon}</div>
+    <div className="mr-7 text-3xl icon-hover">{icon}</div>
     <TextWithCopyIcon text={text} isEditing={isEditing} onChange={onChange} onCopy={onCopy} onClear={onClear} />
   </div>
 );
@@ -66,10 +69,10 @@ const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[
 const Sidebar: React.FC = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [texts, setTexts] = useState<{ text: string, icon: React.ReactNode }[]>([
-    { text: 'Text 1', icon: <Mail className="text-[#67ffa4]" /> },
-    { text: 'Text 2', icon: <Linkedin className="text-[#67ffa4]" /> },
-    { text: 'Text 3', icon: <Globe className="text-[#67ffa4]" /> },
-    { text: 'Text 4', icon: <Github className="text-[#67ffa4]" /> },
+    { text: 'Email', icon: <Mail className="text-[#67ffa4]" /> },
+    { text: 'Linkedin', icon: <Linkedin className="text-[#67ffa4]" /> },
+    { text: 'Website', icon: <Globe className="text-[#67ffa4]" /> },
+    { text: 'Github', icon: <Github className="text-[#67ffa4]" /> },
   ]);
 
   const { user } = useContext(AuthContext);
@@ -135,18 +138,20 @@ const Sidebar: React.FC = () => {
         Authorization: `Bearer ${user?.accessToken}`,
       };
     };
-
+  
     if (user && user.accessToken) {
       console.log(user)
 
-      fetch(`http://3.89.243.29:8080/users/${id}/commonLinks`, {
+  
+      fetch(`http://localhost:8080/users/${id}/commonLinks`, {
+
         headers: getHeaders()
       })
       .then(response => response.json())
       .then(data => {
         const updatedTexts = texts.map((item, index) => ({
           ...item,
-          text: data[index] || '' // Assign fetched commonLinks values to text fields
+          text: data[index] || item.text // Use fetched data if available, otherwise keep the placeholder
         }));
         setTexts(updatedTexts);
       })
@@ -191,26 +196,3 @@ const Sidebar: React.FC = () => {
 
 export default Sidebar;
 
-  /*
-  return (
-    <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
-      <label className="hamburger-menu">
-        <input type="checkbox"/>
-      </label>
-      <div className="sidebar w-full">
-        <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
-          QuickApply
-        </h1>
-        <SidebarContent
-          texts={texts} 
-          isEditing={isEditing} 
-          handleTextChange={handleTextChange} 
-          handleCopyClick={handleCopyClick} 
-          handleEditClick={handleEditClick} 
-          handleClearClick={handleClearClick} 
-        />
-      </div>
-    </div>
-  );
-};
-*/

@@ -1,82 +1,87 @@
 import React, { useState, useContext } from 'react';
-import { Box, CssBaseline, Drawer, Typography, Button } from '@mui/material';
+import { Box, CssBaseline, Drawer, Typography, Button, useMediaQuery, useTheme } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import Titlebar from '../MainGrid/Titlebar';
 import LoginButton from '../login-button';
 import LoginModal from '../../modals/login';
 import RegisterModal from '../../modals/register';
-// import NewListingForm from '../MainGrid/NewListingForm';
 import HeaderTable from '../MainGrid/HeaderTable';
-// import NewListingForm from '../MainGrid/NewListingForm';
 import { AuthContext } from '../../context/AuthContext';
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
+import HamburgerMenu from '../HamburgerMenu/HamburgerMenu';
 
 const drawerWidth = 22;
 
 const LayoutComponent: React.FC = () => {
   const { user, setUser } = useContext(AuthContext);
-
   const [isloginModalOpen, setLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
-
-  const currentWidth = `calc(100% - ${drawerWidth}%)`;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleLoginOpen = () => {
     setLoginModalOpen(true);
     setRegisterModalOpen(false);
   }
-  const handleLoginClose = () => {
-    setLoginModalOpen(false);
-  }
+  const handleLoginClose = () => setLoginModalOpen(false);
 
   const handleRegisterOpen = () => {
     setLoginModalOpen(false);
     setRegisterModalOpen(true);
   };
 
+  const handleRegisterClose = () => setRegisterModalOpen(false);
+
   const logoutClick = () => {
     authService.logout();
-    setUser(null); // Clear the user context on logout
+    setUser(null);
   };
 
-  const handleRegisterClose = () => {
-    setRegisterModalOpen(false);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {/* side bar */}
+      <CssBaseline />
+      
+      {/* Hamburger Menu */}
+      <HamburgerMenu onClick={toggleSidebar} />
+
+      {/* Sidebar */}
       <Drawer
         sx={{
-          width: `${drawerWidth}%`,
+          width: isMobile ? '100%' : `${drawerWidth}%`,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: `${drawerWidth}%`,
+            width: isMobile ? '100%' : `${drawerWidth}%`,
             boxSizing: 'border-box',
             borderRight: '2px solid #67FFA4'
           },
         }}
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
         anchor="left"
+        open={isMobile ? isSidebarOpen : true}
+        onClose={toggleSidebar}
       >
         <Sidebar />
       </Drawer>
 
+      {/* Main Content */}
       <Box
         component="main"
-        sx={{ flexGrow: 1, width: `calc(100% - ${drawerWidth}%)`, backgroundColor: '#303030', position: 'relative' }}
+        sx={{ 
+          flexGrow: 1, 
+          width: { xs: '100%', md: `calc(100% - ${drawerWidth}%)` },
+          backgroundColor: '#303030', 
+          position: 'relative'
+        }}
       >
         <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
           {!user ? (
-            <LoginButton
-              label="Login"
-              onClick={handleLoginOpen}
-            />
+            <LoginButton label="Login" onClick={handleLoginOpen} />
           ) : (
-            <Button onClick={logoutClick}>
-              Logout {user?.username}
-            </Button>
+            <Button onClick={logoutClick}>Logout {user?.username}</Button>
           )}
         </Box>
 
@@ -88,7 +93,6 @@ const LayoutComponent: React.FC = () => {
         </Box>
         }
         {user && <ListingCardGrid />}
-        {/* <NewListingForm /> */}
       </Box>
 
       <LoginModal
