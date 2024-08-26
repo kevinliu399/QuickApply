@@ -73,18 +73,23 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick,
         try {
             const response = await authService.login(username, password);
             
+            if (response.jwt != '') {
+              setUser(response.user);
 
-            setUser(response.user);
+              console.log(response);
 
-            console.log(response);
-          
-            if (onLoginSuccess) onLoginSuccess();
+              if (onLoginSuccess) onLoginSuccess();
+              
+              if (onClick) onClick();
+
+              window.location.reload();
+            } else {
+              setError('Username or password is invalid')
+            }
+
             
-            if (onClick) onClick();
-
-            window.location.reload();
         } catch (err) {
-            setError('Invalid username or password');
+          console.error('Error:', error);
         }
 
         setPassword("");
