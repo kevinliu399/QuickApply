@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build Docker Image for Frontend
-        run: docker build --file frontend/Dockerfile --target build --tag frontend-build:latest ./frontend
+        run: docker build --file frontend/Dockerfile --tag frontend-build:latest ./frontend
 
       - name: Run Frontend Tests
         run: docker run --rm frontend-build:latest npm test -- --watchAll=false
