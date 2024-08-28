@@ -10,6 +10,8 @@ import { AuthContext } from '../../context/AuthContext';
 import authService from '../../services/authService';
 import ListingCardGrid from '../MainGrid/ListingCardGrid';
 import HamburgerMenu from '../HamburgerMenu/HamburgerMenu';
+import LogoutButton from '../logout-button';
+
 
 const drawerWidth = 22;
 
@@ -77,12 +79,13 @@ const LayoutComponent: React.FC = () => {
           position: 'relative'
         }}
       >
-        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+        <Box sx={{ position: 'absolute', top: 28, right: 28 }}>
           {!user ? (
             <>
             </>
           ) : (
-            <Button onClick={logoutClick}>Logout {user?.username}</Button>
+            <LogoutButton label={`Switch Accounts`} onClick={logoutClick}></LogoutButton>
+            
           )}
         </Box>
 
