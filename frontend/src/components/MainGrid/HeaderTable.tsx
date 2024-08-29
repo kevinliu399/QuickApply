@@ -4,7 +4,7 @@ import './maingrid.css';
 
 const HeaderTable: React.FC = () => {
   return (
-    <Box mx={10} mt={3}>
+    <Box mx={10} mt={12}>
         <Box
           display="flex"
           justifyContent="space-evenly"
