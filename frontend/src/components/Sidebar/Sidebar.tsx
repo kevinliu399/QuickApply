@@ -87,11 +87,6 @@ const Sidebar: React.FC = () => {
     if (isEditing && user) {
       const commonLinks = texts.map((item) => item.text);
 
-<<<<<<< HEAD
-
-      //fetch(`http://3.89.243.29:8080/users/${id}/commonLinks`, {
-=======
->>>>>>> 3e29911eb841b7f509c26b753505527869ada17a
       fetch(`http://localhost:8080/users/${id}/commonLinks`, {
         method: 'PUT',
         headers: {
