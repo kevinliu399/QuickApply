@@ -76,10 +76,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
         };
 
         try {
-<<<<<<< HEAD
-            // const response = await fetch('http://3.89.243.29:8080/auth/register', {
-=======
->>>>>>> 3e29911eb841b7f509c26b753505527869ada17a
             const response = await fetch('http://localhost:8080/auth/register', {
                 method: 'POST',
                 headers: {
