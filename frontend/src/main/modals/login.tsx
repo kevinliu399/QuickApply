@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { TextField as MuiTextField, InputAdornment } from '@mui/material';
+import { CircleX } from 'lucide-react';
+import { TextField as MuiTextField } from '@mui/material';
 import { styled } from '@mui/material/styles'; 
-import authService from '../services/authService'; 
+import authService from '../services/authService';
 import './modal.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,95 +10,85 @@ type LoginModalProps = {
     onClick?: () => void;
     onSignUpClick?: () => void;
     isOpen?: boolean;
-    onLoginSuccess?: () => void;
+    onLoginSuccess?: () => void; // Add this prop
 };
 
 type CustomTextFieldProps = {
-    borderColor?: string;
+  borderColor?: string;
 };
 
 const options = {
-    shouldForwardProp: (prop: string) => prop !== 'borderColor',
+  shouldForwardProp: (prop: string) => prop !== 'borderColor',
 };
 
 const CustomTextField = styled(
-    MuiTextField,
-    options,
+  MuiTextField,
+  options,
 )<CustomTextFieldProps>(({ borderColor }) => ({
-    '& label.Mui-focused': {
-        color: borderColor,
+  '& label.Mui-focused': {
+    color: borderColor,
+  },
+  '& .MuiInputLabel-root': {
+    color: borderColor,
+  },
+  '& .MuiInput-underline:before': {
+    borderBottomColor: borderColor,
+    borderBottomWidth: 2,
+    borderBottomStyle: 'solid',
+  },
+  '& .MuiInput-underline:hover:before': {
+    borderBottomColor: borderColor,
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: borderColor,
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
+      borderBottomWidth: 2,
+      borderBottomStyle: 'solid',
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
     },
-    '& .MuiInputLabel-root': {
-        color: borderColor,
+    '&:hover fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
     },
-    '& .MuiInput-underline:before': {
-        borderBottomColor: borderColor,
-        borderBottomWidth: 2,
-        borderBottomStyle: 'solid',
+    '&.Mui-focused fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
     },
-    '& .MuiInput-underline:hover:before': {
-        borderBottomColor: borderColor,
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: borderColor,
-    },
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-            borderBottomWidth: 2,
-            borderBottomStyle: 'solid',
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
-        },
-        '&:hover fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-        },
-    },
+  },
 }));
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick, onLoginSuccess }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false); 
     const [error, setError] = useState<string | null>(null);
     const { setUser }  = useAuth();
 
     const handleLogin = async () => {
-        try {
-            const response = await authService.login(username, password);
-            
-            if (response.jwt != '') {
-              setUser(response.user);
+      try {
+          const response = await authService.login(username, password);
+          
+          // Update the AuthContext with the logged-in user
+          setUser(response.user);
 
-              console.log(response);
+          console.log(response);
+          // Notify the parent component about the successful login
+          if (onLoginSuccess) onLoginSuccess();
+          // Redirect or close modal after successful login
+          if (onClick) onClick();
 
-              if (onLoginSuccess) onLoginSuccess();
-              
-              if (onClick) onClick();
+          window.location.reload();
+      } catch (err) {
+          setError('Invalid username or password');
+      }
 
-              window.location.reload();
-            } else {
-              setError('Username or password is invalid')
-            }
-
-            
-        } catch (err) {
-          console.error('Error:', error);
-        }
-
-        setPassword("");
-        setUsername("");
-    };
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+      setPassword("");
+      setUsername("");
+  };
 
     if (!isOpen) return null;
 
@@ -118,26 +108,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClick, isOpen, onSignUpClick,
                             variant="outlined"
                             className="mb-2 p-2"
                             borderColor="black"
-                            fullWidth
                         />
                         <CustomTextField 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
                             label="Password"
-                            type={showPassword ? 'text' : 'password'} 
+                            type="password"
                             variant="outlined"
                             className="mb-2 p-2" 
                             borderColor="black"
-                            fullWidth
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <div onClick={togglePasswordVisibility} className="cursor-pointer">
-                                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                                        </div>
-                                    </InputAdornment>
-                                ),
-                            }}
                         />
                     </div>
                     {error && <p className="text-red-500">{error}</p>}

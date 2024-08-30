@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent, useEffect, useContext } from 'react';
-import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; 
+import { Mail, Linkedin, Globe, Github, Copy, X } from 'lucide-react'; // Import icons from Lucide
 import './Sidebar.css';
 import { AuthContext } from '../../context/AuthContext';
 
 // TextWithCopyIcon component
-const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void, isDisabled: boolean }> = ({ text, isEditing, onChange, onCopy, onClear, isDisabled }) => (
-  <div className={`bg-[#232323] rounded-md p-2 flex items-center flex-1 ml-2 border-2 ${isDisabled ? 'border-gray-600' : 'border-[rgba(169,169,169,0.6)]'}`} style={{ boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06)' }}>
-    {isEditing && !isDisabled ? (
+const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, isEditing, onChange, onCopy, onClear }) => (
+  <div className="bg-[#232323] rounded-md p-2 flex items-center flex-1 ml-2 border-2 border-[rgba(169,169,169,0.6)]" style={{ boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06)' }}>
+    {isEditing ? (
       <input 
         type="text" 
         value={text} 
@@ -15,11 +15,11 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
         className="flex-1 bg-[#232323] text-[rgba(169,169,169,0.6)] border-none outline-none font-rubik text-sm placeholder-[rgba(169,169,169,0.4)]"
       />
     ) : (
-      <span className={`flex-1 ${isDisabled ? 'text-gray-600' : 'text-[rgba(169,169,169,0.6)]'} font-rubik text-sm`}>
+      <span className="flex-1 text-[rgba(169,169,169,0.6)] font-rubik text-sm">
         {text}
       </span>
     )}
-    {isEditing && !isDisabled ? (
+    {isEditing ? (
       <X 
         color="#d9d9d9" 
         className="ml-2 cursor-pointer text-white" 
@@ -28,9 +28,9 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
       />
     ) : (
       <Copy 
-        color={isDisabled ? "#6b7280" : "#d9d9d9"} 
-        className={`ml-2 ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'} text-white`} 
-        onClick={isDisabled ? undefined : onCopy} 
+        color="#d9d9d9" 
+        className="ml-2 cursor-pointer text-white" 
+        onClick={onCopy} 
         style={{ maxWidth: "20px" }}
       />
     )}
@@ -38,15 +38,15 @@ const TextWithCopyIcon: React.FC<{ text: string, isEditing: boolean, onChange: (
 );
 
 // TextWithIcon component
-const TextWithIcon: React.FC<{ text: string, icon: React.ReactNode, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void, isDisabled: boolean }> = ({ text, icon, isEditing, onChange, onCopy, onClear, isDisabled }) => (
+const TextWithIcon: React.FC<{ text: string, icon: React.ReactNode, isEditing: boolean, onChange: (event: ChangeEvent<HTMLInputElement>) => void, onCopy: () => void, onClear: () => void }> = ({ text, icon, isEditing, onChange, onCopy, onClear }) => (
   <div className="flex items-center my-2 w-4/5 p-3 rounded-md" >
-    <div className={`mr-7 text-3xl ${isDisabled ? 'text-gray-600' : 'icon-hover'}`}>{icon}</div>
-    <TextWithCopyIcon text={text} isEditing={isEditing} onChange={onChange} onCopy={onCopy} onClear={onClear} isDisabled={isDisabled} />
+    <div className="mr-7 text-3xl icon-hover">{icon}</div>
+    <TextWithCopyIcon text={text} isEditing={isEditing} onChange={onChange} onCopy={onCopy} onClear={onClear} />
   </div>
 );
 
 // SidebarContent component
-const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[], isEditing: boolean, handleTextChange: (index: number, event: ChangeEvent<HTMLInputElement>) => void, handleCopyClick: (text: string) => void, handleEditClick: () => void, handleClearClick: (index: number) => void, isDisabled: boolean }> = ({ texts, isEditing, handleTextChange, handleCopyClick, handleEditClick, handleClearClick, isDisabled }) => (
+const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[], isEditing: boolean, handleTextChange: (index: number, event: ChangeEvent<HTMLInputElement>) => void, handleCopyClick: (text: string) => void, handleEditClick: () => void, handleClearClick: (index: number) => void }> = ({ texts, isEditing, handleTextChange, handleCopyClick, handleEditClick, handleClearClick }) => (
   <div className="links-box flex flex-col items-center w-full">
     {texts.map((item, index) => (
       <TextWithIcon 
@@ -57,14 +57,11 @@ const SidebarContent: React.FC<{ texts: { text: string, icon: React.ReactNode }[
         onChange={(e) => handleTextChange(index, e)} 
         onCopy={() => handleCopyClick(item.text)} 
         onClear={() => handleClearClick(index)} 
-        isDisabled={isDisabled}
       />
     ))}
-    {!isDisabled && (
-      <button onClick={handleEditClick} className="self-start mb-4 ml-10 mt-4 flex items-center bg-[#67FFA4] text-black px-4 py-2 rounded-full shadow-lg hover:bg-[#57e293] text-center font-bold text-sm">
-        {isEditing ? 'Save' : 'Edit'}
-      </button>
-    )}
+    <button onClick={handleEditClick} className="self-start mb-4 ml-10 mt-4 flex items-center bg-[#67FFA4] text-black px-4 py-2 rounded-full shadow-lg hover:bg-[#57e293] text-center font-bold text-sm">
+      {isEditing ? 'Save' : 'Edit'}
+    </button>
   </div>
 );
 
@@ -81,23 +78,20 @@ const Sidebar: React.FC = () => {
   const { user } = useContext(AuthContext);
 
   const id = user?.id;
-  const isDisabled = !user; // Gray out content if no user is logged in
 
   const handleEditClick = () => {
-    if (isEditing && user) {
+    if (isEditing) {
       const commonLinks = texts.map((item) => item.text);
 
-<<<<<<< HEAD
 
       //fetch(`http://3.89.243.29:8080/users/${id}/commonLinks`, {
-=======
->>>>>>> 3e29911eb841b7f509c26b753505527869ada17a
       fetch(`http://localhost:8080/users/${id}/commonLinks`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user?.accessToken}`,
         },
+        
         body: JSON.stringify(commonLinks),
       })
       .then(response => {
@@ -112,6 +106,7 @@ const Sidebar: React.FC = () => {
       .catch(error => {
         console.error('Error updating common links:', error);
       });
+      // getCommonLinks(commonLinks);
     }
     setIsEditing(!isEditing);
   };
@@ -123,31 +118,35 @@ const Sidebar: React.FC = () => {
   };
 
   const handleCopyClick = (text: string) => {
-    if (!isDisabled) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Copied to clipboard!');
-      }).catch(err => {
-        alert('Failed to copy!');
-        console.error('Error copying text: ', err);
-      });
-    }
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
+    }).catch(err => {
+      alert('Failed to copy!');
+      console.error('Error copying text: ', err);
+    });
   };
 
   const handleClearClick = (index: number) => {
-    if (!isDisabled) {
-      const newTexts = [...texts];
-      newTexts[index].text = '';
-      setTexts(newTexts);
-    }
+    const newTexts = [...texts];
+    newTexts[index].text = '';
+    setTexts(newTexts);
   };
 
   const getCommonLinks = () => {
+    const getHeaders = () => {
+      return {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user?.accessToken}`,
+      };
+    };
+  
     if (user && user.accessToken) {
+      console.log(user)
+
+  
       fetch(`http://localhost:8080/users/${id}/commonLinks`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user?.accessToken}`,
-        }
+
+        headers: getHeaders()
       })
       .then(response => response.json())
       .then(data => {
@@ -161,17 +160,28 @@ const Sidebar: React.FC = () => {
         console.error('Error fetching common links:', error);
       });
     }
-  };
 
-  useEffect(() => {
-    getCommonLinks();
-  }, [user]);
+    
+};
+
+    useEffect(() => {
+      getCommonLinks();
+    }, [user]);
 
   return (
-    <div className={`bg-[#201c1c] flex flex-col items-center p-4 h-screen ${isDisabled ? 'opacity-100 pointer-events-none' : ''}`}>
+    <div className="bg-[#201c1c] flex flex-col items-center p-4 h-screen">
       <h1 className="text-5xl mb-20 mt-20 font-rubik font-semibold text-center text-[rgba(255,255,255)]">
         QuickApply
       </h1>
+
+      {!user &&
+      <p style={{ color: 'white'}}>
+        PLEASE LOG IN TO ACCESS COMMON LINKS
+      </p>
+      
+      }
+      {user &&  
+      
       <SidebarContent 
         texts={texts} 
         isEditing={isEditing} 
@@ -179,10 +189,11 @@ const Sidebar: React.FC = () => {
         handleCopyClick={handleCopyClick} 
         handleEditClick={handleEditClick} 
         handleClearClick={handleClearClick} 
-        isDisabled={isDisabled} 
-      />
+      />}
+     
     </div>
   );
 };
 
 export default Sidebar;
+

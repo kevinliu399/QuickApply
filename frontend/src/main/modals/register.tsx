@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { CircleX, Eye, EyeOff } from 'lucide-react';
-import { TextField as MuiTextField, InputAdornment } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { CircleX } from 'lucide-react';
+import { TextField as MuiTextField } from '@mui/material';
+import { styled } from '@mui/material/styles'; 
 
 type RegisterModalProps = {
     onClick?: () => void;
@@ -10,60 +10,60 @@ type RegisterModalProps = {
 };
 
 type CustomTextFieldProps = {
-    borderColor?: string;
+  borderColor?: string;
 };
 
 const options = {
-    shouldForwardProp: (prop: string) => prop !== 'borderColor',
+  shouldForwardProp: (prop: string) => prop !== 'borderColor',
 };
 
 const CustomTextField = styled(
-    MuiTextField,
-    options,
+  MuiTextField,
+  options,
 )<CustomTextFieldProps>(({ borderColor }) => ({
-    '& label.Mui-focused': {
-        color: borderColor,
+  '& label.Mui-focused': {
+    color: borderColor,
+  },
+  '& .MuiInputLabel-root': {
+    color: borderColor,
+  },
+  '& .MuiInput-underline:before': {
+    borderBottomColor: borderColor,
+    borderBottomWidth: 2,
+    borderBottomStyle: 'solid',
+  },
+  '& .MuiInput-underline:hover:before': {
+    borderBottomColor: borderColor,
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: borderColor,
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
+      borderBottomWidth: 2,
+      borderBottomStyle: 'solid',
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
     },
-    '& .MuiInputLabel-root': {
-        color: borderColor,
+    '&:hover fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
     },
-    '& .MuiInput-underline:before': {
-        borderBottomColor: borderColor,
-        borderBottomWidth: 2,
-        borderBottomStyle: 'solid',
+    '&.Mui-focused fieldset': {
+      borderColor: 'transparent',
+      borderBottomColor: borderColor,
     },
-    '& .MuiInput-underline:hover:before': {
-        borderBottomColor: borderColor,
-    },
-    '& .MuiInput-underline:after': {
-        borderBottomColor: borderColor,
-    },
-    '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-            borderBottomWidth: 2,
-            borderBottomStyle: 'solid',
-            borderBottomLeftRadius: 0,
-            borderBottomRightRadius: 0,
-        },
-        '&:hover fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-        },
-        '&.Mui-focused fieldset': {
-            borderColor: 'transparent',
-            borderBottomColor: borderColor,
-        },
-    },
+  },
 }));
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignInClick }) => {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+
     const [errMsg, setErrMsg] = useState('');
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -76,10 +76,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
         };
 
         try {
-<<<<<<< HEAD
             // const response = await fetch('http://3.89.243.29:8080/auth/register', {
-=======
->>>>>>> 3e29911eb841b7f509c26b753505527869ada17a
             const response = await fetch('http://localhost:8080/auth/register', {
                 method: 'POST',
                 headers: {
@@ -92,27 +89,23 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                 setIsSuccess(true);
                 setErrMsg('');
             } else {
-                setErrMsg('Username already exists');
+                setErrMsg('Username already exists')
                 console.error('Registration failed');
             }
         } catch (error) {
             console.error('Error:', error);
         }
 
-        setEmail('');
-        setUsername('');
-        setPassword('');
+        setEmail("");
+        setUsername("");
+        setPassword("");
     };
 
     const handleCloseSuccessful = () => {
-        if (onSignInClick) {
-            onSignInClick();
-        }
-        setIsSuccess(false);
-    };
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
+      if (onSignInClick) {
+        onSignInClick();
+      }
+      setIsSuccess(false);
     };
 
     if (!isOpen) return null;
@@ -134,7 +127,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                                 variant="outlined"
                                 className="mb-2 p-2"
                                 borderColor="black"
-                                fullWidth
                             />
                             <CustomTextField
                                 value={username}
@@ -143,7 +135,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                                 variant="outlined"
                                 className="mb-2 p-2"
                                 borderColor="black"
-                                fullWidth
                             />
                             <CustomTextField
                                 value={password}
@@ -152,27 +143,22 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClick, isOpen, onSignIn
                                 variant="outlined"
                                 className="mb-2 p-2"
                                 borderColor="black"
-                                fullWidth
-                                type={showPassword ? 'text' : 'password'}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <div onClick={togglePasswordVisibility} className="cursor-pointer">
-                                                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                                            </div>
-                                        </InputAdornment>
-                                    ),
-                                }}
                             />
                             <div className="flex justify-center py-2 items-center w-full">
                                 <button type="submit" className="text-gray-800 font-semibold py-2 px-8 rounded-xl border-2 hover:bg-main-green hover:duration-500 hover:shadow-md">Sign Up</button>
                             </div>
                         </form>
                         {errMsg && (
-                            <p style={{ color: 'red' }}>{errMsg}</p>
-                        )}
+
+                          <p style={{color: 'red'}}>
+                            {errMsg}
+                          </p>
+                          )}
                         <p className="mt-4">Already have an account? <a className="text-gray-400 hover:text-main-green hover:duration-200 hover:underline cursor-pointer" onClick={onSignInClick}>Sign In</a></p>
+                        
                     </div>
+                    
+                  
                 )}
                 {isSuccess && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
