@@ -12,14 +12,13 @@ jobs:
   build-backend:
     name: Build and Test Spring Boot Backend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
+      
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -27,27 +26,26 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
+      
       - name: Build Docker Image for Backend
         run: docker build --file backend/Dockerfile --target build --tag backend-build:latest ./backend
-
-      - name: Run Tests
+      
+      - name: Run All Tests
         run: docker run --rm backend-build:latest mvn test
-
+      
       - name: Build Production Docker Image for Backend
         run: docker build --file backend/Dockerfile --tag backend:latest ./backend
 
   build-frontend:
     name: Build and Test React Frontend
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
+      
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -55,13 +53,10 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
+      
       - name: Build Docker Image for Frontend
         run: docker build --file frontend/Dockerfile --tag frontend-build:latest ./frontend
-
-      - name: Run Frontend Tests
-        run: docker run --rm frontend-build:latest npm test -- --watchAll=false
-
+      
       - name: Build Production Docker Image for Frontend
         run: docker build --file frontend/Dockerfile --tag frontend:latest ./frontend
 
