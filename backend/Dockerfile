@@ -1,6 +1,16 @@
 # Use an official Maven image to build the application
 FROM maven:3.8.5-openjdk-17-slim AS build
 
+ARG MONGO_DATABASE
+ARG MONGO_USER
+ARG MONGO_PASSWORD
+ARG MONGO_CLUSTER
+
+ENV MONGO_DATABASE=${MONGO_DATABASE}
+ENV MONGO_USER=${MONGO_USER}
+ENV MONGO_PASSWORD=${MONGO_PASSWORD}
+ENV MONGO_CLUSTER=${MONGO_CLUSTER}
+
 # Set the working directory inside the container
 WORKDIR /app
 
