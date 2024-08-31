@@ -31,14 +31,28 @@ jobs:
         run: |
           docker build \
             --file backend/Dockerfile \
-            --target build \
-            --tag backend-build:latest \
             --build-arg MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} \
             --build-arg MONGO_USER=${{ secrets.MONGO_USER }} \
             --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
             --build-arg MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }} \
+            --target build \
+            --tag backend-build:latest \
             ./backend
       
+      - name: Set Environment Variables
+        run: |
+          echo "MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}" >> $GITHUB_ENV
+          echo "MONGO_USER=${{ secrets.MONGO_USER }}" >> $GITHUB_ENV
+          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> $GITHUB_ENV
+          echo "MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }}" >> $GITHUB_ENV
+
+      - name: Debug Environment Variables
+        run: |
+          echo "MONGO_DATABASE is set: ${{ env.MONGO_DATABASE != '' }}"
+          echo "MONGO_USER is set: ${{ env.MONGO_USER != '' }}"
+          echo "MONGO_PASSWORD is set: ${{ env.MONGO_PASSWORD != '' }}"
+          echo "MONGO_CLUSTER is set: ${{ env.MONGO_CLUSTER != '' }}"
+        
       - name: Run All Tests with Verbose Output
         run: |
           docker run --rm \
@@ -48,24 +62,15 @@ jobs:
             -e MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }} \
             backend-build:latest \
             mvn test -Dtest=com.QuickApply.QuickApply.** -Dsurefire.useFile=false -e -X
-        continue-on-error: true
       
       - name: Print Test Reports
         if: failure()
         run: |
-          docker run --rm -v ${PWD}:/app backend-build:latest cat /app/target/surefire-reports/*.txt || echo "No reports found"
+          docker run --rm -v ${PWD}:/app backend-build:latest cat /app/target/surefire-reports/*.txt
       
       - name: Build Production Docker Image for Backend
         if: success()
-        run: |
-          docker build \
-            --file backend/Dockerfile \
-            --tag backend:latest \
-            --build-arg MONGO_DATABASE=${{ secrets.MONGO_DATABASE }} \
-            --build-arg MONGO_USER=${{ secrets.MONGO_USER }} \
-            --build-arg MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} \
-            --build-arg MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }} \
-            ./backend
+        run: docker build --file backend/Dockerfile --tag backend:latest ./backend
 
   build-frontend:
     name: Build and Test React Frontend
