@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -26,19 +26,16 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      
+
       - name: Build Docker Image for Backend
         run: docker build --file backend/Dockerfile --target build --tag backend-build:latest ./backend
-      
+
       - name: Run All Tests with Verbose Output
         run: |
           docker run --rm backend-build:latest mvn test -Dtest=com.QuickApply.QuickApply.** -Dsurefire.useFile=false -e -X
-      
-      - name: Print Test Reports
+      - name: Print Test Output
         if: failure()
-        run: |
-          docker run --rm -v ${PWD}:/app backend-build:latest cat /app/target/surefire-reports/*.txt
-      
+        run: cat test-output.txt
       - name: Build Production Docker Image for Backend
         if: success()
         run: docker build --file backend/Dockerfile --tag backend:latest ./backend
@@ -49,10 +46,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -60,10 +57,10 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-      
+
       - name: Build Docker Image for Frontend
         run: docker build --file frontend/Dockerfile --tag frontend-build:latest ./frontend
-      
+
       - name: Build Production Docker Image for Frontend
         run: docker build --file frontend/Dockerfile --tag frontend:latest ./frontend
 
