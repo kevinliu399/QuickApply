@@ -32,8 +32,7 @@ jobs:
       
       - name: Run All Tests with Verbose Output
         run: |
-          docker run --rm backend-build:latest mvn test -Dtest=com.QuickApply.QuickApply.** -Dsurefire.useFile=false -e
-        continue-on-error: true
+          docker run --rm backend-build:latest mvn test -Dtest=com.QuickApply.QuickApply.** -Dsurefire.useFile=false -e -X
       
       - name: Print Test Reports
         if: failure()
