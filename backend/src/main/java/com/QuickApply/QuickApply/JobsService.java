@@ -49,7 +49,7 @@ public class JobsService {
         if (job.isPresent()) {
             jobsRepository.deleteById(id);
             User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-            user.getJobIds().remove(id);
+            user.getJobIds().remove(id);  // This line is causing the UnsupportedOperationException
             userRepository.save(user);
         } else {
             throw new RuntimeException("Job not found or does not belong to the user");
